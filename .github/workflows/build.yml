@@ -35,6 +35,7 @@ jobs:
         run: |
           flutter create --platforms android --project-name hmxcloud_app .
           rm -f test/widget_test.dart test/widget_test.dart.bak
+          sed -i 's/minSdkVersion [0-9]\+/minSdkVersion 23/' android/app/build.gradle android/app/build.gradle.kts 2>/dev/null || true
 
       - name: Install dependencies
         run: flutter pub get
