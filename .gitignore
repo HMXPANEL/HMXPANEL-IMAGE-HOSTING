@@ -1,3 +1,9 @@
+android/
+ios/
+web/
+linux/
+macos/
+windows/
 .dart_tool/
 .packages
 .pub/

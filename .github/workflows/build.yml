@@ -31,6 +31,9 @@ jobs:
       - name: Configure Flutter
         run: flutter config --no-analytics
 
+      - name: Generate platform files
+        run: flutter create --platforms android --project-name hmxcloud_app .
+
       - name: Install dependencies
         run: flutter pub get
 
