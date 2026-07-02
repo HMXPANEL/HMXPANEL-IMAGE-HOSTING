@@ -8,7 +8,6 @@ import 'settings_page.dart';
 import 'profile_sheet.dart';
 import 'search_delegate.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../core/utils/extensions.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../upload/presentation/upload_provider.dart';
 import '../../../core/widgets/app_bottom_sheet.dart';
-import '../../../core/utils/extensions.dart';
 
 class ProfileSheet extends ConsumerWidget {
   const ProfileSheet({super.key});

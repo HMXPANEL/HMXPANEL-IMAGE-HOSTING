@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import '../config/app_config.dart';
 import '../errors/exceptions.dart';
 
 class DioClient {
