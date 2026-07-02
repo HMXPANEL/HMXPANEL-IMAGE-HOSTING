@@ -32,7 +32,9 @@ jobs:
         run: flutter config --no-analytics
 
       - name: Generate platform files
-        run: flutter create --platforms android --project-name hmxcloud_app .
+        run: |
+          flutter create --platforms android --project-name hmxcloud_app .
+          rm -f test/widget_test.dart test/widget_test.dart.bak
 
       - name: Install dependencies
         run: flutter pub get
