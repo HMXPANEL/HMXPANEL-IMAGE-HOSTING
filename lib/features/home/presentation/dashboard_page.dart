@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import '../../upload/presentation/upload_provider.dart';
 import '../../upload/presentation/upload_sheet.dart';
 import '../../viewer/presentation/image_card.dart';
 import '../../viewer/presentation/image_viewer_sheet.dart';
 import '../../../core/widgets/loading_skeleton.dart';
 import '../../../core/widgets/empty_state.dart';
-import '../../../core/widgets/error_state.dart';
+import '../../../core/utils/extensions.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});

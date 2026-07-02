@@ -33,7 +33,7 @@ class CacheException extends AppException {
   CacheException(super.message, {super.code, super.stackTrace});
 }
 
-FirebaseExceptionHandler({
+firebaseExceptionHandler({
   required String message,
   String? code,
 }) {

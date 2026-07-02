@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -107,14 +106,15 @@ class UploadNotifier extends StateNotifier<UploadState> {
 
   Future<File?> compressImage(File file) async {
     try {
-      final result = await FlutterImageCompress.compressAndGetFile(
+      final xFile = await FlutterImageCompress.compressAndGetFile(
         file.path,
         '${file.path}_compressed.jpg',
         quality: AppConfig.imageQuality,
         minWidth: AppConfig.maxImageDimension,
         minHeight: AppConfig.maxImageDimension,
       );
-      return result;
+      if (xFile == null) return null;
+      return File(xFile.path);
     } catch (e) {
       state = state.copyWith(error: 'Compression failed');
       return null;

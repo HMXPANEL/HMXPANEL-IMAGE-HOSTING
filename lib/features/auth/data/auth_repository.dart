@@ -37,7 +37,7 @@ class AuthRepository {
       );
       return AppUser.fromFirebase(credential.user);
     } on FirebaseAuthException catch (e) {
-      throw FirebaseExceptionHandler(message: e.message ?? 'Login failed', code: e.code);
+      throw firebaseExceptionHandler(message: e.message ?? 'Login failed', code: e.code);
     }
   }
 
@@ -55,7 +55,7 @@ class AuthRepository {
       });
       return AppUser.fromFirebase(credential.user);
     } on FirebaseAuthException catch (e) {
-      throw FirebaseExceptionHandler(message: e.message ?? 'Signup failed', code: e.code);
+      throw firebaseExceptionHandler(message: e.message ?? 'Signup failed', code: e.code);
     }
   }
 

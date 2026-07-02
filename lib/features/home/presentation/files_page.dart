@@ -5,6 +5,7 @@ import '../../viewer/presentation/image_card.dart';
 import '../../viewer/presentation/image_viewer_sheet.dart';
 import '../../../core/widgets/loading_skeleton.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/utils/extensions.dart';
 
 class FilesPage extends ConsumerWidget {
   const FilesPage({super.key});

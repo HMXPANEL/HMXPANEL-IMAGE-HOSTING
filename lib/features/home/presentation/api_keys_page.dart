@@ -7,6 +7,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_bottom_sheet.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/utils/extensions.dart';
 
 class ApiKeysPage extends ConsumerWidget {
   const ApiKeysPage({super.key});
@@ -121,6 +122,7 @@ class _ApiKeyCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const _ApiKeyCard({
+    super.key,
     required this.apiKey,
     required this.onEdit,
     required this.onDelete,

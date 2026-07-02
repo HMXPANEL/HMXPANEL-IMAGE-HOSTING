@@ -37,7 +37,7 @@ class SettingsPage extends ConsumerWidget {
                     builder: (_, ref2, __) {
                       return Switch(
                         value: context.isDark,
-                        onChanged: (v) => _toggleTheme(v),
+                        onChanged: (v) => ref2.read(themeModeProvider.notifier).toggle(v),
                       );
                     },
                   ),
@@ -88,12 +88,7 @@ class SettingsPage extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  void _toggleTheme(bool isDark) {
-    ref.read(themeModeProvider.notifier).toggle(isDark);
-  }
-}
+  }}
 
 class _SectionCard extends StatelessWidget {
   final List<Widget> children;
