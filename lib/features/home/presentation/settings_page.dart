@@ -332,11 +332,11 @@ class SettingsPage extends ConsumerWidget {
       subtitle: 'App information',
       child: Column(
         children: [
-          _SettingRow(
+          const _SettingRow(
             icon: Icons.info_outline_rounded,
             title: 'Version',
             subtitle: AppConstants.appVersion,
-            trailing: const GlassBadge(label: 'Latest', color: Color(0xFF10B981)),
+            trailing: GlassBadge(label: 'Latest', color: Color(0xFF10B981)),
           ),
           const SizedBox(height: 4),
           const GlassDivider(),

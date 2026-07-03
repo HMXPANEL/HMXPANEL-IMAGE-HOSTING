@@ -143,7 +143,7 @@ class DashboardPage extends ConsumerWidget {
                   gradient: context.aurora.primaryAurora,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: GlassStatCard(
                   label: 'Storage Used',
@@ -165,7 +165,7 @@ class DashboardPage extends ConsumerWidget {
                   gradient: context.aurora.tertiaryAurora,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: GlassStatCard(
                   label: 'API Keys',
@@ -242,41 +242,41 @@ class DashboardPage extends ConsumerWidget {
             Expanded(child: _QuickUploadTile(
               icon: Icons.camera_alt_rounded,
               label: 'Camera',
-              gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]),
+              gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]),
               onTap: null,
             )),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(child: _QuickUploadTile(
               icon: Icons.photo_library_rounded,
               label: 'Gallery',
-              gradient: const LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]),
+              gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]),
               onTap: null,
             )),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(child: _QuickUploadTile(
               icon: Icons.folder_open_rounded,
               label: 'Browse',
-              gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
+              gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
               onTap: null,
             )),
           ],
         ),
         medium: (_) => const Row(
           children: [
-            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
-            const SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: const LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: null)),
-            const SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
+            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
+            SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: null)),
+            SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
           ],
         ),
         large: (_) => const Row(
           children: [
-            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
-            const SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: const LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: null)),
-            const SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
+            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
+            SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: null)),
+            SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
           ],
         ),
       ),
@@ -307,7 +307,7 @@ class DashboardPage extends ConsumerWidget {
                   icon: Icons.image_outlined,
                   title: 'No images yet',
                   subtitle: 'Upload your first image to get started',
-                  action: const GlassButton(
+                  action: GlassButton(
                     label: 'Upload Now',
                     icon: Icons.cloud_upload_outlined,
                     onPressed: null,
