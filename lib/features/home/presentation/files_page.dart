@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../upload/presentation/upload_provider.dart';
 import '../../upload/presentation/upload_sheet.dart';
 import '../../viewer/presentation/image_card.dart';
@@ -10,6 +13,7 @@ import '../../../core/theme/premium_extensions.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/utils/download_helper.dart';
 
 class FilesPage extends ConsumerStatefulWidget {
   const FilesPage({super.key});
@@ -301,9 +305,19 @@ class _FilesPageState extends ConsumerState<FilesPage> {
             _ContextMenuItem(
               icon: Icons.download_rounded,
               label: 'Download',
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                GlassSnackBar.show(context, 'Download started');
+                GlassSnackBar.show(context, 'Downloading...', icon: Icons.download_rounded);
+                try {
+                  await saveImageToGallery(upload.url);
+                  if (context.mounted) {
+                    GlassSnackBar.show(context, 'Saved to gallery', icon: Icons.check_circle_rounded);
+                  }
+                } catch (_) {
+                  if (context.mounted) {
+                    GlassSnackBar.show(context, 'Download failed', icon: Icons.error_outline_rounded);
+                  }
+                }
               },
             ),
             _ContextMenuItem(
@@ -311,7 +325,8 @@ class _FilesPageState extends ConsumerState<FilesPage> {
               label: 'Copy Link',
               onTap: () {
                 Navigator.pop(context);
-                GlassSnackBar.show(context, 'Link copied!');
+                Clipboard.setData(ClipboardData(text: upload.url));
+                GlassSnackBar.show(context, 'Link copied!', icon: Icons.check_circle_rounded);
               },
             ),
             _ContextMenuItem(
@@ -319,7 +334,9 @@ class _FilesPageState extends ConsumerState<FilesPage> {
               label: 'Share',
               onTap: () {
                 Navigator.pop(context);
-                GlassSnackBar.show(context, 'Sharing...');
+                SharePlus.instance.share(
+                  ShareParams(text: upload.url),
+                );
               },
             ),
             _ContextMenuItem(

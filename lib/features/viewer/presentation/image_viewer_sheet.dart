@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../upload/domain/upload_model.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/widgets/glass_components.dart';
+import '../../../core/utils/download_helper.dart';
 
 class ImageViewerSheet extends StatefulWidget {
   final Upload upload;
@@ -81,14 +85,27 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _ViewerAction(icon: Icons.download_rounded, label: 'Save', onTap: () {
-                  GlassSnackBar.show(context, 'Download started', icon: Icons.download_rounded);
+                _ViewerAction(icon: Icons.download_rounded, label: 'Save', onTap: () async {
+                  GlassSnackBar.show(context, 'Downloading...', icon: Icons.download_rounded);
+                  try {
+                    await saveImageToGallery(upload.url);
+                    if (context.mounted) {
+                      GlassSnackBar.show(context, 'Saved to gallery', icon: Icons.check_circle_rounded);
+                    }
+                  } catch (_) {
+                    if (context.mounted) {
+                      GlassSnackBar.show(context, 'Download failed', icon: Icons.error_outline_rounded);
+                    }
+                  }
                 }),
                 _ViewerAction(icon: Icons.link_rounded, label: 'Copy', onTap: () {
+                  Clipboard.setData(ClipboardData(text: upload.url));
                   GlassSnackBar.show(context, 'Link copied!', icon: Icons.check_circle_rounded);
                 }),
                 _ViewerAction(icon: Icons.share_rounded, label: 'Share', onTap: () {
-                  GlassSnackBar.show(context, 'Sharing...', icon: Icons.share_rounded);
+                  SharePlus.instance.share(
+                    ShareParams(text: upload.url),
+                  );
                 }),
                 _ViewerAction(
                   icon: Icons.delete_outline_rounded,

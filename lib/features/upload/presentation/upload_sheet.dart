@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'upload_provider.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/theme/premium_extensions.dart';
@@ -316,7 +318,10 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
               ),
               IconButton(
                 icon: Icon(Icons.copy_rounded, color: cs.onSurfaceVariant, size: 20),
-                onPressed: () => GlassSnackBar.show(context, 'Link copied!', icon: Icons.check_circle_rounded),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: upload.url));
+                  GlassSnackBar.show(context, 'Link copied!', icon: Icons.check_circle_rounded);
+                },
               ),
             ],
           ),
@@ -366,7 +371,7 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
                 child: GlassButton(
                   label: 'Open URL',
                   icon: Icons.open_in_new_rounded,
-                  onPressed: () {},
+                  onPressed: () => launchUrl(Uri.parse(upload.url)),
                   expanded: true,
                   fontSize: 14,
                 ),

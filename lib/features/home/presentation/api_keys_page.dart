@@ -91,7 +91,7 @@ class ApiKeysPage extends ConsumerWidget {
                         return _ApiProviderCard(
                           key: ValueKey(apiKey.id),
                           apiKey: apiKey,
-                          onEdit: () {},
+                          onEdit: () => _showEditKeySheet(context, ref, apiKey),
                           onDelete: () => _confirmDelete(context, ref, apiKey.id),
                           onToggle: () {
                             ref.read(uploadProvider.notifier).updateApiKey(
@@ -133,6 +133,29 @@ class ApiKeysPage extends ConsumerWidget {
     );
   }
 
+  void _showEditKeySheet(BuildContext context, WidgetRef ref, ApiKey apiKey) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AddApiKeySheet(
+        initialKey: apiKey,
+        onSave: (service, name, key, description) {
+          ref.read(uploadProvider.notifier).updateApiKey(
+            apiKey.copyWith(
+              service: service,
+              name: name,
+              key: key,
+              description: description,
+            ),
+          );
+          GlassSnackBar.show(context, 'API Key updated');
+        },
+      ),
+    );
+  }
+
   void _confirmDelete(BuildContext context, WidgetRef ref, String id) {
     showDialog(
       context: context,
@@ -152,9 +175,10 @@ class ApiKeysPage extends ConsumerWidget {
 }
 
 class _AddApiKeySheet extends StatefulWidget {
+  final ApiKey? initialKey;
   final void Function(String service, String name, String key, String? description) onSave;
 
-  const _AddApiKeySheet({required this.onSave});
+  const _AddApiKeySheet({this.initialKey, required this.onSave});
 
   @override
   State<_AddApiKeySheet> createState() => _AddApiKeySheetState();
@@ -162,10 +186,10 @@ class _AddApiKeySheet extends StatefulWidget {
 
 class _AddApiKeySheetState extends State<_AddApiKeySheet> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  final _keyCtrl = TextEditingController();
-  final _descCtrl = TextEditingController();
-  String _service = 'imgbb';
+  late final _nameCtrl = TextEditingController(text: widget.initialKey?.name);
+  late final _keyCtrl = TextEditingController(text: widget.initialKey?.key);
+  late final _descCtrl = TextEditingController(text: widget.initialKey?.description);
+  late String _service = widget.initialKey?.service ?? 'imgbb';
 
   final _services = ['imgbb', 'imgkit', 'cloudinary', 'imgur', 'postimage'];
 
@@ -291,7 +315,7 @@ class _AddApiKeySheetState extends State<_AddApiKeySheet> {
   }
 }
 
-class _ApiProviderCard extends StatelessWidget {
+class _ApiProviderCard extends StatefulWidget {
   final ApiKey apiKey;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -306,9 +330,17 @@ class _ApiProviderCard extends StatelessWidget {
   });
 
   @override
+  State<_ApiProviderCard> createState() => _ApiProviderCardState();
+}
+
+class _ApiProviderCardState extends State<_ApiProviderCard> {
+  bool _obscured = true;
+
+  @override
   Widget build(BuildContext context) {
     final g = context.glass;
     final cs = context.colorScheme;
+    final apiKey = widget.apiKey;
     final gradient = _serviceGradient(apiKey.service);
 
     return Padding(
@@ -409,7 +441,7 @@ class _ApiProviderCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      Formatters.maskApiKey(apiKey.key),
+                      _obscured ? Formatters.maskApiKey(apiKey.key) : apiKey.key,
                       style: TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 13,
@@ -418,7 +450,13 @@ class _ApiProviderCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(Icons.visibility_outlined, size: 16, color: cs.onSurfaceVariant),
+                  GestureDetector(
+                    onTap: () => setState(() => _obscured = !_obscured),
+                    child: Icon(
+                      _obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      size: 16, color: cs.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
