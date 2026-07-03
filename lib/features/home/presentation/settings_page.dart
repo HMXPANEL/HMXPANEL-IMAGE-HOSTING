@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../upload/presentation/upload_provider.dart';
 import 'profile_sheet.dart';
@@ -11,9 +12,14 @@ import '../../../core/utils/extensions.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/formatters.dart';
 
-class SettingsPage extends ConsumerWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
+  @override
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   static const _accentColors = [
     Color(0xFF0EA5E9),
     Color(0xFF8B5CF6),
@@ -23,8 +29,34 @@ class SettingsPage extends ConsumerWidget {
     Color(0xFFF59E0B),
   ];
 
+  bool _uploadNotify = true;
+  bool _autoDeleteNotify = false;
+  bool _biometricAuth = false;
+  bool _hideApiKeys = true;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _uploadNotify = prefs.getBool('upload_notify') ?? true;
+      _autoDeleteNotify = prefs.getBool('auto_delete_notify') ?? false;
+      _biometricAuth = prefs.getBool('biometric_auth') ?? false;
+      _hideApiKeys = prefs.getBool('hide_api_keys') ?? true;
+    });
+  }
+
+  Future<void> _saveSetting(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final upload = ref.watch(uploadProvider);
     final cs = context.colorScheme;
@@ -69,7 +101,7 @@ class SettingsPage extends ConsumerWidget {
             ),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                _buildAppearanceSection(context, cs, ref),
+                _buildAppearanceSection(context, cs),
                 const SizedBox(height: 12),
                 _buildNotificationsSection(context, cs),
                 const SizedBox(height: 12),
@@ -218,7 +250,7 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildAppearanceSection(BuildContext context, ColorScheme cs, WidgetRef ref) {
+  Widget _buildAppearanceSection(BuildContext context, ColorScheme cs) {
     return GlassSection(
       title: 'Appearance',
       subtitle: 'Customize your experience',
@@ -285,7 +317,13 @@ class SettingsPage extends ConsumerWidget {
             icon: Icons.cloud_done_rounded,
             title: 'Upload Complete',
             subtitle: 'Notify when upload finishes',
-            trailing: Switch(value: true, onChanged: (_) {}),
+            trailing: Switch(
+              value: _uploadNotify,
+              onChanged: (v) {
+                setState(() => _uploadNotify = v);
+                _saveSetting('upload_notify', v);
+              },
+            ),
           ),
           const SizedBox(height: 4),
           const GlassDivider(),
@@ -294,7 +332,13 @@ class SettingsPage extends ConsumerWidget {
             icon: Icons.delete_outline_rounded,
             title: 'Auto Delete',
             subtitle: 'Notify when images expire',
-            trailing: Switch(value: false, onChanged: (_) {}),
+            trailing: Switch(
+              value: _autoDeleteNotify,
+              onChanged: (v) {
+                setState(() => _autoDeleteNotify = v);
+                _saveSetting('auto_delete_notify', v);
+              },
+            ),
           ),
         ],
       ),
@@ -311,7 +355,13 @@ class SettingsPage extends ConsumerWidget {
             icon: Icons.lock_outline_rounded,
             title: 'Biometric Auth',
             subtitle: 'Require biometrics to open app',
-            trailing: Switch(value: false, onChanged: (_) {}),
+            trailing: Switch(
+              value: _biometricAuth,
+              onChanged: (v) {
+                setState(() => _biometricAuth = v);
+                _saveSetting('biometric_auth', v);
+              },
+            ),
           ),
           const SizedBox(height: 4),
           const GlassDivider(),
@@ -320,7 +370,13 @@ class SettingsPage extends ConsumerWidget {
             icon: Icons.visibility_off_rounded,
             title: 'Hide API Keys',
             subtitle: 'Mask all API keys in the app',
-            trailing: Switch(value: true, onChanged: (_) {}),
+            trailing: Switch(
+              value: _hideApiKeys,
+              onChanged: (v) {
+                setState(() => _hideApiKeys = v);
+                _saveSetting('hide_api_keys', v);
+              },
+            ),
           ),
         ],
       ),

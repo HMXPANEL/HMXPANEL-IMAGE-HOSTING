@@ -1,5 +1,3 @@
-import '../errors/exceptions.dart';
-
 class Validators {
   Validators._();
 
@@ -44,54 +42,4 @@ class Validators {
     return null;
   }
 
-  static String? apiKeyName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Name is required';
-    }
-    return null;
-  }
-
-  static String? apiKeyValue(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'API Key is required';
-    }
-    if (value.trim().length < 4) {
-      return 'Invalid API Key';
-    }
-    return null;
-  }
-
-  static void validateOrThrow({
-    String? email,
-    String? password,
-    String? confirmPassword,
-    String? name,
-    String? apiKeyName,
-    String? apiKeyValue,
-  }) {
-    if (email != null) {
-      final err = Validators.email(email);
-      if (err != null) throw ValidationException(err);
-    }
-    if (password != null) {
-      final err = Validators.password(password);
-      if (err != null) throw ValidationException(err);
-    }
-    if (confirmPassword != null && password != null) {
-      final err = Validators.confirmPassword(confirmPassword, password);
-      if (err != null) throw ValidationException(err);
-    }
-    if (name != null) {
-      final err = Validators.name(name);
-      if (err != null) throw ValidationException(err);
-    }
-    if (apiKeyName != null) {
-      final err = Validators.apiKeyName(apiKeyName);
-      if (err != null) throw ValidationException(err);
-    }
-    if (apiKeyValue != null) {
-      final err = Validators.apiKeyValue(apiKeyValue);
-      if (err != null) throw ValidationException(err);
-    }
-  }
 }

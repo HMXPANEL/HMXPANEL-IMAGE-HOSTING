@@ -11,9 +11,15 @@ class AppTheme {
   static ThemeData get light => _baseTheme(Brightness.light);
   static ThemeData get dark => _baseTheme(Brightness.dark);
 
-  static ThemeData _baseTheme(Brightness brightness) {
+  static ThemeData lightWithAccent(Color accent) => _baseTheme(Brightness.light, accent);
+  static ThemeData darkWithAccent(Color accent) => _baseTheme(Brightness.dark, accent);
+
+  static ThemeData _baseTheme(Brightness brightness, [Color? accent]) {
     final isDark = brightness == Brightness.dark;
-    final colorScheme = isDark ? _darkColorScheme : _lightColorScheme;
+    var colorScheme = isDark ? _darkColorScheme : _lightColorScheme;
+    if (accent != null) {
+      colorScheme = colorScheme.copyWith(primary: accent);
+    }
 
     return ThemeData(
       useMaterial3: true,

@@ -12,13 +12,14 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final accent = ref.watch(accentColorProvider);
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: AppTheme.lightWithAccent(accent),
+      darkTheme: AppTheme.darkWithAccent(accent),
       themeMode: themeMode,
       routerConfig: router,
       builder: (context, child) {

@@ -15,7 +15,7 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final double? borderRadius;
   final double? blur;
-  final dynamic gradient;
+  final Gradient? gradient;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final double? elevation;
@@ -41,27 +41,13 @@ class GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final g = context.glass;
     final radius = borderRadius ?? 20;
-    final bg = gradient ?? g.glassSurface;
-
-    final Gradient? resolvedGradient;
-    final Color? resolvedColor;
-    if (bg is Gradient) {
-      resolvedGradient = bg;
-      resolvedColor = null;
-    } else if (bg is Color) {
-      resolvedGradient = null;
-      resolvedColor = bg;
-    } else {
-      resolvedGradient = null;
-      resolvedColor = null;
-    }
 
     Widget card = Container(
       margin: margin ?? EdgeInsets.zero,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
-        gradient: resolvedGradient,
-        color: resolvedColor,
+        gradient: gradient,
+        color: gradient != null ? null : g.glassSurface,
         border: Border.all(
           color: borderColor ?? g.glassBorder,
           width: 0.5,
@@ -278,96 +264,6 @@ class _GlassButtonState extends State<GlassButton> with SingleTickerProviderStat
   }
 }
 
-class GlassInput extends StatelessWidget {
-  final String label;
-  final String? hint;
-  final TextEditingController? controller;
-  final String? Function(String?)? validator;
-  final bool obscureText;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  final void Function(String)? onSubmitted;
-  final int maxLines;
-  final bool enabled;
-
-  const GlassInput({
-    super.key,
-    required this.label,
-    this.hint,
-    this.controller,
-    this.validator,
-    this.obscureText = false,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.keyboardType,
-    this.textInputAction,
-    this.onSubmitted,
-    this.maxLines = 1,
-    this.enabled = true,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final g = context.glass;
-    final cs = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: cs.onSurfaceVariant,
-              letterSpacing: 0.3,
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            boxShadow: [
-              BoxShadow(
-                color: g.glassShadow,
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextFormField(
-            controller: controller,
-            validator: validator,
-            obscureText: obscureText,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            onFieldSubmitted: onSubmitted,
-            maxLines: maxLines,
-            enabled: enabled,
-            style: TextStyle(
-              color: cs.onSurface,
-              fontSize: 15,
-            ),
-            decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: TextStyle(color: cs.onSurfaceVariant.withAlpha(120)),
-              prefixIcon: prefixIcon,
-              suffixIcon: suffixIcon,
-              prefixIconColor: cs.onSurfaceVariant,
-              suffixIconColor: cs.onSurfaceVariant,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class GlassFAB extends StatefulWidget {
   final VoidCallback? onPressed;
   final IconData icon;
@@ -464,62 +360,62 @@ class GlassBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final g = context.glass;
     final a = context.aurora;
-    final isDesktop = ResponsiveUtils.isDesktop(context);
+    final bottomPad = MediaQuery.of(context).padding.bottom;
 
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        width: ResponsiveUtils.bottomNavWidth(context),
-        margin: ResponsiveUtils.bottomNavPadding(context),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 8,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          gradient: LinearGradient(
-            colors: [
-              g.glassSurface.withAlpha(240),
-              g.glassSurfaceVariant.withAlpha(220),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomPad > 0 ? bottomPad : 8),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          width: ResponsiveUtils.bottomNavWidth(context),
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 8,
           ),
-          border: Border.all(color: g.glassBorder, width: 0.5),
-          boxShadow: [
-            BoxShadow(
-              color: g.glassShadowStrong,
-              blurRadius: 32,
-              offset: const Offset(0, 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            gradient: LinearGradient(
+              colors: [
+                g.glassSurface.withAlpha(240),
+                g.glassSurfaceVariant.withAlpha(220),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            BoxShadow(
-              color: g.glassShadow,
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+            border: Border.all(color: g.glassBorder, width: 0.5),
+            boxShadow: [
+              BoxShadow(
+                color: g.glassShadowStrong,
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: g.glassShadow,
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(items.length, (i) {
+                final item = items[i];
+                final selected = i == selectedIndex;
+                return Expanded(
+                  child: _GlassNavItemWidget(
+                    item: item,
+                    selected: selected,
+                    onTap: () {
+                      onTap(i);
+                      HapticFeedback.selectionClick();
+                    },
+                  ),
+                );
+              }),
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: Row(
-            mainAxisSize: isDesktop ? MainAxisSize.min : MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(items.length, (i) {
-              final item = items[i];
-              final selected = i == selectedIndex;
-              return Expanded(
-                child: _GlassNavItemWidget(
-                  item: item,
-                  selected: selected,
-                  onTap: () {
-                    onTap(i);
-                    HapticFeedback.selectionClick();
-                  },
-                  aurora: a,
-                  glass: g,
-                ),
-              );
-            }),
           ),
         ),
       ),
@@ -543,19 +439,16 @@ class _GlassNavItemWidget extends StatelessWidget {
   final GlassNavItem item;
   final bool selected;
   final VoidCallback onTap;
-  final AuroraThemeExtension aurora;
-  final GlassThemeExtension glass;
 
   const _GlassNavItemWidget({
     required this.item,
     required this.selected,
     required this.onTap,
-    required this.aurora,
-    required this.glass,
   });
 
   @override
   Widget build(BuildContext context) {
+    final a = context.aurora;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -570,21 +463,17 @@ class _GlassNavItemWidget extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            gradient: selected ? aurora.accentGlow : null,
+            gradient: selected ? a.accentGlow : null,
             color: selected ? null : Colors.transparent,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedSwitcher(
-                duration: 200.ms,
-                child: Icon(
-                  selected ? item.selectedIcon : item.icon,
-                  key: ValueKey(selected),
-                  size: 20,
-                  color: selected ? Colors.white : context.glass.glassBorderStrong,
-                ).animate().scaleXY(begin: 0.8, end: 1.0, duration: 300.ms),
+              Icon(
+                selected ? item.selectedIcon : item.icon,
+                size: 20,
+                color: selected ? Colors.white : context.glass.glassBorderStrong,
               ),
               if (selected) ...[
                 const SizedBox(width: 6),
@@ -595,7 +484,7 @@ class _GlassNavItemWidget extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
-                ).animate().fadeIn(duration: 200.ms).slideX(begin: -0.1, end: 0),
+                ),
               ],
             ],
           ),
@@ -1068,7 +957,7 @@ class GlassSnackBar {
     VoidCallback? onAction,
   }) {
     final a = context.aurora;
-    final overlay = Overlay.of(context);
+    final overlay = Overlay.of(context, rootOverlay: true);
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => Positioned(
@@ -1150,7 +1039,7 @@ class _GlassSnackBarWidgetState extends State<_GlassSnackBarWidget> with SingleT
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: widget.gradient != null ? null : g.glassSurface as Color?,
+            color: widget.gradient != null ? null : g.glassSurface,
             gradient: widget.gradient,
             border: Border.all(color: g.glassBorder, width: 0.5),
             boxShadow: [

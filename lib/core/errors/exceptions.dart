@@ -21,17 +21,6 @@ class UploadException extends AppException {
   UploadException(super.message, {super.code, super.stackTrace});
 }
 
-class CompressionException extends AppException {
-  CompressionException(super.message, {super.code, super.stackTrace});
-}
-
-class ValidationException extends AppException {
-  ValidationException(super.message, {super.code, super.stackTrace});
-}
-
-class CacheException extends AppException {
-  CacheException(super.message, {super.code, super.stackTrace});
-}
 
 firebaseExceptionHandler({
   required String message,

@@ -12,10 +12,6 @@ class Formatters {
     return '${value.toStringAsFixed(1)} ${sizes[i]}';
   }
 
-  static String date(DateTime date) {
-    return DateFormat('MMM d, yyyy').format(date);
-  }
-
   static String dateTime(DateTime date) {
     return DateFormat('MMM d, yyyy \'at\' h:mm a').format(date);
   }
