@@ -7,6 +7,7 @@ import '../../viewer/presentation/image_card.dart';
 import '../../viewer/presentation/image_viewer_sheet.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/theme/premium_extensions.dart';
+import '../../../core/utils/extensions.dart';
 import '../../../core/utils/responsive.dart';
 
 class FilesPage extends ConsumerStatefulWidget {

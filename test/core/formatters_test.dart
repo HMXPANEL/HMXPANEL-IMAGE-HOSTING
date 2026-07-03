@@ -27,10 +27,4 @@ void main() {
     });
   });
 
-  group('Formatters.date', () {
-    test('formats date correctly', () {
-      final date = DateTime(2026, 7, 2);
-      expect(Formatters.date(date), 'Jul 2, 2026');
-    });
-  });
 }

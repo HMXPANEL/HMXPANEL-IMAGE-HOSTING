@@ -15,7 +15,7 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final double? borderRadius;
   final double? blur;
-  final Gradient? gradient;
+  final dynamic gradient;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final double? elevation;
@@ -46,8 +46,8 @@ class GlassCard extends StatelessWidget {
       margin: margin ?? EdgeInsets.zero,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
-        gradient: gradient,
-        color: gradient != null ? null : g.glassSurface,
+        gradient: gradient is Gradient ? gradient : null,
+        color: gradient is Color ? gradient : (gradient != null ? null : g.glassSurface),
         border: Border.all(
           color: borderColor ?? g.glassBorder,
           width: 0.5,

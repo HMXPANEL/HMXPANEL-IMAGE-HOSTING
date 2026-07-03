@@ -110,8 +110,8 @@ class UploadNotifier extends StateNotifier<UploadState> {
         file.path,
         '${file.path}_compressed.jpg',
         quality: AppConfig.imageQuality,
-        maxWidth: AppConfig.maxImageDimension,
-        maxHeight: AppConfig.maxImageDimension,
+        minWidth: AppConfig.maxImageDimension,
+        minHeight: AppConfig.maxImageDimension,
       );
       if (xFile == null) return null;
       return File(xFile.path);

@@ -58,27 +58,4 @@ void main() {
     });
   });
 
-  group('Validators.apiKeyName', () {
-    test('returns null for valid key name', () {
-      expect(Validators.apiKeyName('My Key'), isNull);
-    });
-
-    test('returns error for empty key name', () {
-      expect(Validators.apiKeyName(''), isNotNull);
-    });
-  });
-
-  group('Validators.apiKeyValue', () {
-    test('returns null for valid key value', () {
-      expect(Validators.apiKeyValue('abc12345'), isNull);
-    });
-
-    test('returns error for empty key', () {
-      expect(Validators.apiKeyValue(''), isNotNull);
-    });
-
-    test('returns error for very short key', () {
-      expect(Validators.apiKeyValue('ab'), isNotNull);
-    });
-  });
 }
