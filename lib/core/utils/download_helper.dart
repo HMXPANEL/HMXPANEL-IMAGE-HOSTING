@@ -7,6 +7,6 @@ Future<void> saveImageToGallery(String url) async {
   final dir = await getTemporaryDirectory();
   final path = '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
   await Dio().download(url, path);
-  await ImageGallerySaver.saveFile(path);
+  await ImageGallerySaverPlus.saveFile(path);
   await File(path).delete();
 }
