@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart' show Share;
 import '../../upload/domain/upload_model.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/extensions.dart';
@@ -103,9 +102,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
                   GlassSnackBar.show(context, 'Link copied!', icon: Icons.check_circle_rounded);
                 }),
                 _ViewerAction(icon: Icons.share_rounded, label: 'Share', onTap: () {
-                  SharePlus.instance.share(
-                    ShareParams(text: upload.url),
-                  );
+                  Share.share(upload.url);
                 }),
                 _ViewerAction(
                   icon: Icons.delete_outline_rounded,

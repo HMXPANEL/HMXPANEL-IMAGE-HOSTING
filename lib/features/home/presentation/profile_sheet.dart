@@ -62,7 +62,7 @@ class ProfileSheet extends ConsumerWidget {
               ),
               child: Center(
                 child: Text(
-                  ((user?.displayName?.isNotEmpty == true ? user!.displayName : 'U')[0]).toUpperCase(),
+                  ((user?.displayName?.isNotEmpty == true ? user!.displayName! : 'U')[0]).toUpperCase(),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 36,

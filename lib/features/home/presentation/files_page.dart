@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart' show Share;
 import '../../upload/presentation/upload_provider.dart';
 import '../../upload/presentation/upload_sheet.dart';
 import '../../viewer/presentation/image_card.dart';
@@ -334,9 +333,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
               label: 'Share',
               onTap: () {
                 Navigator.pop(context);
-                SharePlus.instance.share(
-                  ShareParams(text: upload.url),
-                );
+                Share.share(upload.url);
               },
             ),
             _ContextMenuItem(

@@ -408,7 +408,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                     color: apiKey.active ? const Color(0xFF10B981) : cs.surfaceContainerHighest,
                   ),
                   child: GestureDetector(
-                    onTap: onToggle,
+                    onTap: widget.onToggle,
                     child: AnimatedAlign(
                       duration: 200.ms,
                       curve: Curves.easeOutCubic,
@@ -441,7 +441,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      _obscured ? Formatters.maskApiKey(apiKey.key) : apiKey.key,
+                      _obscured ? Formatters.maskApiKey(widget.apiKey.key) : widget.apiKey.key,
                       style: TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 13,
@@ -460,7 +460,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                 ],
               ),
             ),
-            if (apiKey.description != null && apiKey.description!.isNotEmpty) ...[
+            if (widget.apiKey.description != null && widget.apiKey.description!.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -468,7 +468,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      apiKey.description!,
+                      widget.apiKey.description!,
                       style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
                     ),
                   ),
@@ -482,7 +482,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                   child: GlassButton(
                     label: 'Edit',
                     icon: Icons.edit_outlined,
-                    onPressed: onEdit,
+                    onPressed: widget.onEdit,
                     expanded: true,
                     fontSize: 13,
                     gradient: LinearGradient(
@@ -497,7 +497,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                   child: GlassButton(
                     label: 'Delete',
                     icon: Icons.delete_outline,
-                    onPressed: onDelete,
+                    onPressed: widget.onDelete,
                     expanded: true,
                     fontSize: 13,
                     gradient: LinearGradient(
