@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../upload/presentation/upload_provider.dart';
+import 'profile_sheet.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/premium_extensions.dart';
@@ -157,7 +158,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           IconButton(
             icon: Icon(Icons.edit_outlined, color: cs.onSurfaceVariant),
-            onPressed: null,
+            onPressed: () => ProfileSheet.show(context),
           ),
         ],
       ),

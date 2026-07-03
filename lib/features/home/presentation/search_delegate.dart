@@ -62,16 +62,16 @@ class ImageSearchDelegate extends SearchDelegate<String?> {
         title: 'Search your images',
         subtitle: 'Type to search through your uploads',
         iconGradient: context.aurora.primaryAurora,
-        action: const Padding(
-          padding: EdgeInsets.only(top: 8),
+        action: Padding(
+          padding: const EdgeInsets.only(top: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              GlassChip(label: 'Recent', icon: Icons.schedule_rounded, onTap: null),
-              SizedBox(width: 8),
-              GlassChip(label: 'Favorites', icon: Icons.favorite_outline_rounded, onTap: null),
-              SizedBox(width: 8),
-              GlassChip(label: 'Expiring', icon: Icons.timer_outlined, onTap: null),
+              GlassChip(label: 'Recent', icon: Icons.schedule_rounded, onTap: () => query = 'recent:'),
+              const SizedBox(width: 8),
+              GlassChip(label: 'Favorites', icon: Icons.favorite_outline_rounded, onTap: () => query = 'fav:'),
+              const SizedBox(width: 8),
+              GlassChip(label: 'Expiring', icon: Icons.timer_outlined, onTap: () => query = 'expiring:'),
             ],
           ),
         ),

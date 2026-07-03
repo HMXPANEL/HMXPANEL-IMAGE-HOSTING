@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../upload/presentation/upload_provider.dart';
+import '../../upload/presentation/upload_sheet.dart';
 import '../../viewer/presentation/image_card.dart';
 import '../../viewer/presentation/image_viewer_sheet.dart';
 import '../../../core/widgets/glass_components.dart';
@@ -143,10 +144,10 @@ class _FilesPageState extends ConsumerState<FilesPage> {
                               ? 'Upload your first image'
                               : 'Try a different search or filter',
                           action: state.uploads.isEmpty
-                              ? const GlassButton(
+                              ? GlassButton(
                                   label: 'Upload Now',
                                   icon: Icons.cloud_upload_outlined,
-                                  onPressed: null,
+                                  onPressed: () => UploadSheet.show(context),
                                   expanded: false,
                                 )
                               : null,

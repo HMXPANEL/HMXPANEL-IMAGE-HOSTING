@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../upload/presentation/upload_provider.dart';
+import '../../upload/presentation/upload_sheet.dart';
 import '../../viewer/presentation/image_card.dart';
 import '../../viewer/presentation/image_viewer_sheet.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/providers/tab_index_provider.dart';
 
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
@@ -28,11 +31,11 @@ class DashboardPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildWelcomeSection(context, cs, state),
+          _buildWelcomeSection(context, cs, state, ref),
           SizedBox(height: ResponsiveUtils.isSmall(context) ? 20 : 28),
           _buildStatsRow(context, state),
           SizedBox(height: ResponsiveUtils.isSmall(context) ? 20 : 28),
-          _buildQuickUpload(context),
+          _buildQuickUpload(context, ref),
           SizedBox(height: ResponsiveUtils.isSmall(context) ? 24 : 32),
           _buildRecentActivitySection(context, cs, state, ref),
           const SizedBox(height: 24),
@@ -43,7 +46,7 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildWelcomeSection(BuildContext context, ColorScheme cs, UploadState state) {
+  Widget _buildWelcomeSection(BuildContext context, ColorScheme cs, UploadState state, WidgetRef ref) {
     final user = state.uploads.isNotEmpty ? 'Welcome back!' : 'Welcome!';
     final count = state.uploads.length;
 
@@ -81,12 +84,12 @@ class DashboardPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const GlassButton(
+                GlassButton(
                   label: 'Upload Now',
                   icon: Icons.cloud_upload_outlined,
-                  onPressed: null,
+                  onPressed: () => UploadSheet.show(context),
                   expanded: false,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
               ],
             ),
@@ -231,52 +234,52 @@ class DashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickUpload(BuildContext context) {
+  Widget _buildQuickUpload(BuildContext context, WidgetRef ref) {
     return GlassSection(
       title: 'Quick Upload',
       subtitle: 'Choose a source',
       trailing: const GlassBadge(label: 'Free', color: Color(0xFF10B981)),
       child: ResponsiveWidget(
-        small: (_) => const Row(
+        small: (_) => Row(
           children: [
             Expanded(child: _QuickUploadTile(
               icon: Icons.camera_alt_rounded,
               label: 'Camera',
-              gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]),
-              onTap: null,
+              gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]),
+              onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.camera),
             )),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(child: _QuickUploadTile(
               icon: Icons.photo_library_rounded,
               label: 'Gallery',
-              gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]),
-              onTap: null,
+              gradient: const LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]),
+              onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.gallery),
             )),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(child: _QuickUploadTile(
               icon: Icons.folder_open_rounded,
               label: 'Browse',
-              gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
-              onTap: null,
+              gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
+              onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.gallery),
             )),
           ],
         ),
-        medium: (_) => const Row(
+        medium: (_) => Row(
           children: [
-            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
-            SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: null)),
-            SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
+            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.camera))),
+            const SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: const LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.gallery))),
+            const SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.gallery))),
           ],
         ),
-        large: (_) => const Row(
+        large: (_) => Row(
           children: [
-            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
-            SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: null)),
-            SizedBox(width: 16),
-            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
+            Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.camera))),
+            const SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.photo_library_rounded, label: 'Gallery', gradient: const LinearGradient(colors: [Color(0xFF0EA5E9), Color(0xFF2563EB)]), onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.gallery))),
+            const SizedBox(width: 16),
+            Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: () => ref.read(uploadProvider.notifier).pickImage(ImageSource.gallery))),
           ],
         ),
       ),
@@ -291,10 +294,10 @@ class DashboardPage extends ConsumerWidget {
       title: 'Recent Activity',
       subtitle: '${state.uploads.length} total images',
       trailing: state.uploads.isNotEmpty
-          ? const GlassChip(
+          ? GlassChip(
               label: 'View All',
               icon: Icons.arrow_forward_rounded,
-              onTap: null,
+              onTap: () => ref.read(tabIndexProvider.notifier).state = 1,
             )
           : null,
       child: state.isLoading
@@ -303,14 +306,14 @@ class DashboardPage extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator()),
             )
           : recent.isEmpty
-              ? const GlassEmptyState(
+              ? GlassEmptyState(
                   icon: Icons.image_outlined,
                   title: 'No images yet',
                   subtitle: 'Upload your first image to get started',
                   action: GlassButton(
                     label: 'Upload Now',
                     icon: Icons.cloud_upload_outlined,
-                    onPressed: null,
+                    onPressed: () => UploadSheet.show(context),
                     expanded: false,
                   ),
                 )

@@ -7,9 +7,11 @@ import 'api_keys_page.dart';
 import 'settings_page.dart';
 import 'profile_sheet.dart';
 import 'search_delegate.dart';
+import '../../upload/presentation/upload_sheet.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/providers/tab_index_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -20,15 +22,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage>
     with TickerProviderStateMixin {
-  int _currentIndex = 0;
   late AnimationController _fabController;
-
-  final _pages = const [
-    DashboardPage(),
-    FilesPage(),
-    ApiKeysPage(),
-    SettingsPage(),
-  ];
 
   @override
   void initState() {
@@ -48,11 +42,12 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   Widget build(BuildContext context) {
     final cs = context.colorScheme;
+    final tabIndex = ref.watch(tabIndexProvider);
 
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: _currentIndex == 0
+      appBar: tabIndex == 0
           ? AppBar(
               toolbarHeight: 72,
               leading: Padding(
@@ -130,14 +125,14 @@ class _HomePageState extends ConsumerState<HomePage>
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
         child: KeyedSubtree(
-          key: ValueKey(_currentIndex),
-          child: _pages[_currentIndex],
+          key: ValueKey(tabIndex),
+          child: _pages[tabIndex],
         ),
       ),
       bottomNavigationBar: GlassBottomNav(
-        selectedIndex: _currentIndex,
+        selectedIndex: tabIndex,
         onTap: (i) {
-          setState(() => _currentIndex = i);
+          ref.read(tabIndexProvider.notifier).state = i;
           _fabController.reset();
           _fabController.forward();
         },
@@ -164,10 +159,17 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
         ],
       ),
-      floatingActionButton: const GlassFAB(
-        onPressed: null,
+      floatingActionButton: GlassFAB(
+        onPressed: () => UploadSheet.show(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     ).animate().fadeIn(duration: 500.ms);
   }
 }
+
+final _pages = <Widget>[
+  const DashboardPage(),
+  const FilesPage(),
+  const ApiKeysPage(),
+  const SettingsPage(),
+];

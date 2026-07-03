@@ -20,8 +20,8 @@ class ApiKeysPage extends ConsumerWidget {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      floatingActionButton: const GlassFAB(
-        onPressed: null,
+      floatingActionButton: GlassFAB(
+        onPressed: () => _showAddKeySheet(context, ref),
         icon: Icons.add_rounded,
       ),
       body: CustomScrollView(
@@ -76,10 +76,10 @@ class ApiKeysPage extends ConsumerWidget {
                       title: 'No API keys yet',
                       subtitle: 'Add an API key to start uploading to your preferred service',
                       iconGradient: a.primaryAurora,
-                      action: const GlassButton(
+                      action: GlassButton(
                         label: 'Add API Key',
                         icon: Icons.add_rounded,
-                        onPressed: null,
+                        onPressed: () => _showAddKeySheet(context, ref),
                         expanded: false,
                       ),
                     ),
@@ -113,6 +113,26 @@ class ApiKeysPage extends ConsumerWidget {
     );
   }
 
+  void _showAddKeySheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AddApiKeySheet(
+        onSave: (service, name, key, description) {
+          ref.read(uploadProvider.notifier).addApiKey(
+            service: service,
+            name: name,
+            key: key,
+            description: description,
+            active: true,
+          );
+        },
+      ),
+    );
+  }
+
   void _confirmDelete(BuildContext context, WidgetRef ref, String id) {
     showDialog(
       context: context,
@@ -126,6 +146,146 @@ class ApiKeysPage extends ConsumerWidget {
           Navigator.pop(context);
           GlassSnackBar.show(context, 'API Key deleted');
         },
+      ),
+    );
+  }
+}
+
+class _AddApiKeySheet extends StatefulWidget {
+  final void Function(String service, String name, String key, String? description) onSave;
+
+  const _AddApiKeySheet({required this.onSave});
+
+  @override
+  State<_AddApiKeySheet> createState() => _AddApiKeySheetState();
+}
+
+class _AddApiKeySheetState extends State<_AddApiKeySheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
+  final _keyCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  String _service = 'imgbb';
+
+  final _services = ['imgbb', 'imgkit', 'cloudinary', 'imgur', 'postimage'];
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _keyCtrl.dispose();
+    _descCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: GlassCard(
+        margin: EdgeInsets.zero,
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: cs.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Add API Key',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 20),
+              DropdownButtonFormField<String>(
+                value: _service,
+                decoration: const InputDecoration(
+                  labelText: 'Service',
+                  filled: true,
+                ),
+                items: _services.map((s) => DropdownMenuItem(
+                  value: s,
+                  child: Text(AppConstants.serviceLabels[s] ?? s),
+                )).toList(),
+                onChanged: (v) => setState(() => _service = v ?? 'imgbb'),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Key Name',
+                  hintText: 'e.g. My Production Key',
+                  filled: true,
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _keyCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'API Key',
+                  hintText: 'Paste your API key here',
+                  filled: true,
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty) ? 'Key is required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _descCtrl,
+                decoration: const InputDecoration(
+                  labelText: 'Description (optional)',
+                  filled: true,
+                ),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassButton(
+                      label: 'Cancel',
+                      onPressed: () => Navigator.pop(context),
+                      expanded: true,
+                      gradient: LinearGradient(
+                        colors: [Theme.of(context).colorScheme.surfaceContainerHighest, Theme.of(context).colorScheme.surfaceContainerHighest],
+                      ),
+                      foregroundColor: cs.onSurface,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GlassButton(
+                      label: 'Save Key',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          widget.onSave(_service, _nameCtrl.text.trim(), _keyCtrl.text.trim(),
+                              _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim());
+                          Navigator.pop(context);
+                          GlassSnackBar.show(context, 'API Key added');
+                        }
+                      },
+                      expanded: true,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
