@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/extensions.dart';
 

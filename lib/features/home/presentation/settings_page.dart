@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../upload/presentation/upload_provider.dart';
 import '../../../core/constants/app_constants.dart';

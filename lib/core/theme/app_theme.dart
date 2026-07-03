@@ -6,7 +6,6 @@ class AppTheme {
 
   static const _borderRadius = BorderRadius.all(Radius.circular(16));
   static const _primaryBg = Color(0xFF070B17);
-  static const _surfaceDark = Color(0xFF0F172A);
   static const _cardDark = Color(0xFF1E293B);
 
   static ThemeData get light => _baseTheme(Brightness.light);

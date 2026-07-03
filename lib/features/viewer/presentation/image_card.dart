@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../upload/domain/upload_model.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/extensions.dart';

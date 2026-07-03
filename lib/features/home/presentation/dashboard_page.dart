@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../upload/presentation/upload_provider.dart';
-import '../../upload/presentation/upload_sheet.dart';
 import '../../viewer/presentation/image_card.dart';
 import '../../viewer/presentation/image_viewer_sheet.dart';
 import '../../../core/widgets/glass_components.dart';
@@ -17,8 +16,6 @@ class DashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(uploadProvider);
-    final g = context.glass;
-    final a = context.aurora;
     final cs = context.colorScheme;
 
     return SingleChildScrollView(
@@ -128,7 +125,6 @@ class DashboardPage extends ConsumerWidget {
   }
 
   Widget _buildStatsRow(BuildContext context, UploadState state) {
-    final isSmall = ResponsiveUtils.isSmall(context);
     final uploadCount = state.uploads.length;
     final totalSize = state.uploads.fold<int>(0, (sum, u) => sum + u.size);
     final apiKeyCount = state.apiKeys.length;
@@ -236,7 +232,6 @@ class DashboardPage extends ConsumerWidget {
   }
 
   Widget _buildQuickUpload(BuildContext context) {
-    final a = context.aurora;
     return GlassSection(
       title: 'Quick Upload',
       subtitle: 'Choose a source',
