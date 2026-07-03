@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../upload/presentation/upload_provider.dart';
 import '../../../core/widgets/glass_components.dart';
+import '../../../core/theme/premium_extensions.dart';
 import '../../../core/utils/extensions.dart';
 
 class ProfileSheet extends ConsumerWidget {

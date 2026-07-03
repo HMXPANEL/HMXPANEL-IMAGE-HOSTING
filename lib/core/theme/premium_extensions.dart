@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 class GlassThemeExtension extends ThemeExtension<GlassThemeExtension> {
@@ -71,8 +72,8 @@ class GlassThemeExtension extends ThemeExtension<GlassThemeExtension> {
       glassHighlight: Color.lerp(glassHighlight, other.glassHighlight, t)!,
       glassShadow: Color.lerp(glassShadow, other.glassShadow, t)!,
       glassShadowStrong: Color.lerp(glassShadowStrong, other.glassShadowStrong, t)!,
-      glassBlur: lerpDouble(glassBlur, other.glassBlur, t)!,
-      glassBlurStrong: lerpDouble(glassBlurStrong, other.glassBlurStrong, t)!,
+      glassBlur: ui.lerpDouble(glassBlur, other.glassBlur, t)!,
+      glassBlurStrong: ui.lerpDouble(glassBlurStrong, other.glassBlurStrong, t)!,
       glassBorderRadius: BorderRadius.lerp(glassBorderRadius, other.glassBorderRadius, t)!,
       glassBorderRadiusSmall: BorderRadius.lerp(glassBorderRadiusSmall, other.glassBorderRadiusSmall, t)!,
       glassBorderRadiusLarge: BorderRadius.lerp(glassBorderRadiusLarge, other.glassBorderRadiusLarge, t)!,

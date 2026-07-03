@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/widgets/glass_components.dart';
-import '../../../core/utils/extensions.dart';
+import '../../../../core/widgets/glass_components.dart';
+import '../../../../core/utils/extensions.dart';
 
 class AuthField extends StatelessWidget {
   final String label;

@@ -362,7 +362,7 @@ class DashboardPage extends ConsumerWidget {
           Row(
             children: [
               _StorageStat(label: 'Images', value: '${state.uploads.length}', icon: Icons.image_rounded),
-              _StorageStat(label: 'Used', value: Formatters.bytes(totalSize), icon: Icons.database_rounded),
+              _StorageStat(label: 'Used', value: Formatters.bytes(totalSize), icon: Icons.storage_rounded),
               _StorageStat(label: 'Remaining', value: '${(100 * 1024 * 1024 - totalSize) > 0 ? Formatters.bytes((100 * 1024 * 1024 - totalSize).clamp(0, 100 * 1024 * 1024)) : '0 B'}', icon: Icons.space_dashboard_rounded),
             ],
           ),

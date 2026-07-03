@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import '../theme/premium_extensions.dart';
-import '../utils/extensions.dart';
 import 'glass_components.dart';
 
 class AuroraBackground extends StatefulWidget {

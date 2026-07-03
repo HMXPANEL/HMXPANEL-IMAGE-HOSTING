@@ -215,7 +215,7 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
           children: [
             Icon(Icons.image_outlined, size: 16, color: cs.onSurfaceVariant),
             const SizedBox(width: 6),
-            Text(file.name, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+            Text(file.path.split('/').last, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
             const Spacer(),
             Icon(Icons.storage_rounded, size: 16, color: cs.onSurfaceVariant),
             const SizedBox(width: 6),
@@ -355,10 +355,10 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
                   expanded: true,
                   fontSize: 14,
                   gradient: LinearGradient(
-                    colors: [g.glassSurfaceVariant, g.glassSurfaceVariant],
+                    colors: [context.glass.glassSurfaceVariant, context.glass.glassSurfaceVariant],
                   ),
                   foregroundColor: cs.onSurface,
-                  borderColor: g.glassBorder,
+                  borderColor: context.glass.glassBorder,
                 ),
               ),
               const SizedBox(width: 12),

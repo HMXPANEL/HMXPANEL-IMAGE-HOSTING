@@ -138,6 +138,7 @@ class _ApiProviderCard extends StatelessWidget {
   final VoidCallback onToggle;
 
   const _ApiProviderCard({
+    super.key,
     required this.apiKey,
     required this.onEdit,
     required this.onDelete,
@@ -148,7 +149,6 @@ class _ApiProviderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final g = context.glass;
     final cs = context.colorScheme;
-    final a = context.aurora;
     final gradient = _serviceGradient(apiKey.service);
 
     return Padding(
