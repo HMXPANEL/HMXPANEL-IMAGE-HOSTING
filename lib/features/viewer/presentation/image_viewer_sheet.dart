@@ -108,17 +108,17 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
               child: Column(
                 children: [
                   _InfoRow(label: 'File Name', value: upload.fileName, cs: cs),
-                  SizedBox(height: 6),
-                  GlassDivider(),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
+                  const GlassDivider(),
+                  const SizedBox(height: 6),
                   _InfoRow(label: 'Upload Date', value: Formatters.dateTime(upload.timestamp), cs: cs),
-                  SizedBox(height: 6),
-                  GlassDivider(),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
+                  const GlassDivider(),
+                  const SizedBox(height: 6),
                   _InfoRow(label: 'File Size', value: Formatters.bytes(upload.size), cs: cs),
-                  SizedBox(height: 6),
-                  GlassDivider(),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
+                  const GlassDivider(),
+                  const SizedBox(height: 6),
                   _InfoRow(
                     label: 'Expires',
                     value: upload.expiration != null

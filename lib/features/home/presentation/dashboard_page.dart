@@ -35,9 +35,9 @@ class DashboardPage extends ConsumerWidget {
           _buildQuickUpload(context),
           SizedBox(height: ResponsiveUtils.isSmall(context) ? 24 : 32),
           _buildRecentActivitySection(context, cs, state, ref),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           _buildStorageSection(context, state),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -81,12 +81,12 @@ class DashboardPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                GlassButton(
+                const GlassButton(
                   label: 'Upload Now',
                   icon: Icons.cloud_upload_outlined,
                   onPressed: null,
                   expanded: false,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 ),
               ],
             ),
@@ -235,9 +235,9 @@ class DashboardPage extends ConsumerWidget {
     return GlassSection(
       title: 'Quick Upload',
       subtitle: 'Choose a source',
-      trailing: GlassBadge(label: 'Free', color: const Color(0xFF10B981)),
+      trailing: const GlassBadge(label: 'Free', color: Color(0xFF10B981)),
       child: ResponsiveWidget(
-        small: (_) => Row(
+        small: (_) => const Row(
           children: [
             Expanded(child: _QuickUploadTile(
               icon: Icons.camera_alt_rounded,
@@ -261,7 +261,7 @@ class DashboardPage extends ConsumerWidget {
             )),
           ],
         ),
-        medium: (_) => Row(
+        medium: (_) => const Row(
           children: [
             Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
             const SizedBox(width: 16),
@@ -270,7 +270,7 @@ class DashboardPage extends ConsumerWidget {
             Expanded(child: _QuickUploadTile(icon: Icons.folder_open_rounded, label: 'Browse', gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]), onTap: null)),
           ],
         ),
-        large: (_) => Row(
+        large: (_) => const Row(
           children: [
             Expanded(child: _QuickUploadTile(icon: Icons.camera_alt_rounded, label: 'Camera', gradient: const LinearGradient(colors: [Color(0xFFEC4899), Color(0xFFE11D48)]), onTap: null)),
             const SizedBox(width: 16),
@@ -291,7 +291,7 @@ class DashboardPage extends ConsumerWidget {
       title: 'Recent Activity',
       subtitle: '${state.uploads.length} total images',
       trailing: state.uploads.isNotEmpty
-          ? GlassChip(
+          ? const GlassChip(
               label: 'View All',
               icon: Icons.arrow_forward_rounded,
               onTap: null,
@@ -303,11 +303,11 @@ class DashboardPage extends ConsumerWidget {
               child: Center(child: CircularProgressIndicator()),
             )
           : recent.isEmpty
-              ? GlassEmptyState(
+              ? const GlassEmptyState(
                   icon: Icons.image_outlined,
                   title: 'No images yet',
                   subtitle: 'Upload your first image to get started',
-                  action: GlassButton(
+                  action: const GlassButton(
                     label: 'Upload Now',
                     icon: Icons.cloud_upload_outlined,
                     onPressed: null,
@@ -358,11 +358,11 @@ class DashboardPage extends ConsumerWidget {
             children: [
               _StorageStat(label: 'Images', value: '${state.uploads.length}', icon: Icons.image_rounded),
               _StorageStat(label: 'Used', value: Formatters.bytes(totalSize), icon: Icons.storage_rounded),
-              _StorageStat(label: 'Remaining', value: '${(100 * 1024 * 1024 - totalSize) > 0 ? Formatters.bytes((100 * 1024 * 1024 - totalSize).clamp(0, 100 * 1024 * 1024)) : '0 B'}', icon: Icons.space_dashboard_rounded),
+              _StorageStat(label: 'Remaining', value: (100 * 1024 * 1024 - totalSize) > 0 ? Formatters.bytes((100 * 1024 * 1024 - totalSize).clamp(0, 100 * 1024 * 1024)) : '0 B', icon: Icons.space_dashboard_rounded),
             ],
           ),
           const SizedBox(height: 8),
-          GlassDivider(),
+          const GlassDivider(),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -460,7 +460,7 @@ class _QuickUploadTileState extends State<_QuickUploadTile>
               const SizedBox(height: 12),
               Text(
                 widget.label,
-                style: TextStyle(
+                  style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),

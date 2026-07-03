@@ -65,7 +65,7 @@ class _HomePageState extends ConsumerState<HomePage>
                       gradient: context.aurora.primaryAurora,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.person_rounded,
                       color: Colors.white,
                       size: 22,
@@ -121,7 +121,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 ),
               ],
             )
-          : PreferredSize(
+          : const PreferredSize(
               preferredSize: Size.zero,
               child: SizedBox.shrink(),
             ),
@@ -164,7 +164,7 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
         ],
       ),
-      floatingActionButton: GlassFAB(
+      floatingActionButton: const GlassFAB(
         onPressed: null,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

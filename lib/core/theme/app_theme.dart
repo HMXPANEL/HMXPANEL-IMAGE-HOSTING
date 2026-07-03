@@ -26,7 +26,7 @@ class AppTheme {
       ],
       cardTheme: CardTheme(
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: _borderRadius),
+        shape: const RoundedRectangleBorder(borderRadius: _borderRadius),
         color: isDark ? _cardDark.withAlpha(200) : Colors.white.withAlpha(220),
       ),
       appBarTheme: AppBarTheme(
@@ -135,7 +135,7 @@ class AppTheme {
         color: isDark ? Colors.white.withAlpha(20) : Colors.black.withAlpha(12),
         thickness: 1,
       ),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         displayLarge: TextStyle(
           fontFamily: 'Space Grotesk',
           fontWeight: FontWeight.w800,
@@ -240,7 +240,6 @@ class AppTheme {
     onErrorContainer: Color(0xFF7F1D1D),
     surface: Color(0xFFF8FAFC),
     onSurface: Color(0xFF0F172A),
-    surfaceVariant: Color(0xFFF1F5F9),
     onSurfaceVariant: Color(0xFF64748B),
     outline: Color(0xFFCBD5E1),
     outlineVariant: Color(0xFFE2E8F0),
@@ -268,7 +267,6 @@ class AppTheme {
     onErrorContainer: Color(0xFFFECACA),
     surface: Color(0xFF070B17),
     onSurface: Color(0xFFF1F5F9),
-    surfaceVariant: Color(0xFF1E293B),
     onSurfaceVariant: Color(0xFF94A3B8),
     outline: Color(0xFF334155),
     outlineVariant: Color(0xFF1E293B),

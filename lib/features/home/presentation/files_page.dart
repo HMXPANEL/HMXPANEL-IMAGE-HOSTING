@@ -18,7 +18,7 @@ class FilesPage extends ConsumerStatefulWidget {
 }
 
 class _FilesPageState extends ConsumerState<FilesPage> {
-  bool _isGridView = true;
+  final bool _isGridView = true;
   String _searchQuery = '';
   int _selectedFilter = 0;
   final _searchCtrl = TextEditingController();
@@ -127,7 +127,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
               ResponsiveUtils.padding(context).bottom + 120,
             ),
             sliver: state.isLoading
-                ? SliverFillRemaining(
+                ? const SliverFillRemaining(
                     child: Center(
                       child: GlassLoading(size: 40),
                     ),
@@ -143,7 +143,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
                               ? 'Upload your first image'
                               : 'Try a different search or filter',
                           action: state.uploads.isEmpty
-                              ? GlassButton(
+                              ? const GlassButton(
                                   label: 'Upload Now',
                                   icon: Icons.cloud_upload_outlined,
                                   onPressed: null,

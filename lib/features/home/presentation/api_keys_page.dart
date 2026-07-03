@@ -20,7 +20,7 @@ class ApiKeysPage extends ConsumerWidget {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      floatingActionButton: GlassFAB(
+      floatingActionButton: const GlassFAB(
         onPressed: null,
         icon: Icons.add_rounded,
       ),
@@ -76,7 +76,7 @@ class ApiKeysPage extends ConsumerWidget {
                       title: 'No API keys yet',
                       subtitle: 'Add an API key to start uploading to your preferred service',
                       iconGradient: a.primaryAurora,
-                      action: GlassButton(
+                      action: const GlassButton(
                         label: 'Add API Key',
                         icon: Icons.add_rounded,
                         onPressed: null,
@@ -173,7 +173,7 @@ class _ApiProviderCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Icon(Icons.key_rounded, color: Colors.white, size: 22),
+                  child: const Icon(Icons.key_rounded, color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(

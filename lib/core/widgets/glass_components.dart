@@ -471,7 +471,7 @@ class GlassBottomNav extends StatelessWidget {
       child: Container(
         width: ResponsiveUtils.bottomNavWidth(context),
         margin: ResponsiveUtils.bottomNavPadding(context),
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: 8,
           vertical: 8,
         ),
@@ -975,7 +975,7 @@ class GlassLoading extends StatelessWidget {
         child: SizedBox(
           width: size * 0.7,
           height: size * 0.7,
-          child: CircularProgressIndicator(
+          child: const CircularProgressIndicator(
             strokeWidth: 2,
             color: Colors.white,
           ),
