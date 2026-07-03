@@ -359,7 +359,6 @@ class GlassBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final g = context.glass;
-    final a = context.aurora;
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
     return Padding(
