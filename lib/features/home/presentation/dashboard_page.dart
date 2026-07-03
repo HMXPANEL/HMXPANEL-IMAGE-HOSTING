@@ -143,7 +143,7 @@ class DashboardPage extends ConsumerWidget {
                   gradient: context.aurora.primaryAurora,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: GlassStatCard(
                   label: 'Storage Used',
@@ -165,7 +165,7 @@ class DashboardPage extends ConsumerWidget {
                   gradient: context.aurora.tertiaryAurora,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: GlassStatCard(
                   label: 'API Keys',
