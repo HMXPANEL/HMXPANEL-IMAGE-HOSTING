@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/constants/app_constants.dart';
+import 'core/widgets/aurora_background.dart';
 import 'router/app_router.dart';
 
 class App extends ConsumerWidget {
@@ -20,6 +21,13 @@ class App extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
       routerConfig: router,
+      builder: (context, child) {
+        return AuroraBackground(
+          blur: 80,
+          opacity: 0.15,
+          child: child!,
+        );
+      },
     );
   }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/widgets/glass_components.dart';
+import '../../core/utils/extensions.dart';
 
 class AppBottomSheet extends StatelessWidget {
   final String title;
@@ -18,10 +21,7 @@ class AppBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: Theme.of(context).cardTheme.color,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (_) => AppBottomSheet(title: title, child: child),
     );
   }
@@ -32,8 +32,9 @@ class AppBottomSheet extends StatelessWidget {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: SizedBox(
-        width: double.infinity,
+      child: GlassCard(
+        margin: EdgeInsets.zero,
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -42,20 +43,24 @@ class AppBottomSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: context.colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 20),
+            if (title.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: context.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             Flexible(child: child),
           ],
         ),
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
   }
 }

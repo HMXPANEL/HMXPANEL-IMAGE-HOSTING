@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/glass_components.dart';
+import '../../../core/utils/extensions.dart';
 
 class AuthField extends StatelessWidget {
   final String label;
@@ -28,31 +30,60 @@ class AuthField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = context.colorScheme;
+    final g = context.glass;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
             label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: cs.onSurfaceVariant,
+              letterSpacing: 0.3,
+            ),
           ),
         ),
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          validator: validator,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          onFieldSubmitted: onFieldSubmitted,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: g.glassShadow,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            validator: validator,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            onFieldSubmitted: onFieldSubmitted,
+            style: TextStyle(
+              color: cs.onSurface,
+              fontSize: 15,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: cs.onSurfaceVariant.withAlpha(120)),
+              prefixIcon: prefixIcon,
+              suffixIcon: suffixIcon,
+              prefixIconColor: cs.onSurfaceVariant,
+              suffixIconColor: cs.onSurfaceVariant,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: g.glassSurface,
+            ),
           ),
         ),
       ],

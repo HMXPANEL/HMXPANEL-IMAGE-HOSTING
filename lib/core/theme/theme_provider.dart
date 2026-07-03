@@ -7,6 +7,10 @@ final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((r
   return ThemeModeNotifier();
 });
 
+final accentColorProvider = StateNotifierProvider<AccentColorNotifier, Color>((ref) {
+  return AccentColorNotifier();
+});
+
 class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   ThemeModeNotifier() : super(ThemeMode.system) {
     _load();
@@ -27,5 +31,25 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     state = mode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(AppConstants.themeKey, isDark ? 'dark' : 'light');
+  }
+}
+
+class AccentColorNotifier extends StateNotifier<Color> {
+  AccentColorNotifier() : super(const Color(0xFF0EA5E9)) {
+    _load();
+  }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final colorStr = prefs.getString('accent_color');
+    if (colorStr != null) {
+      state = Color(int.parse(colorStr));
+    }
+  }
+
+  Future<void> setColor(Color color) async {
+    state = color;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accent_color', color.value.toString());
   }
 }

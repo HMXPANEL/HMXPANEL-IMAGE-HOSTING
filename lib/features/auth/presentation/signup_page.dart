@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'auth_provider.dart';
 import 'widgets/auth_field.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/utils/extensions.dart';
+import '../../../core/utils/responsive.dart';
+import '../../../core/widgets/glass_components.dart';
 import '../../../router/app_router.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -34,118 +38,151 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   Future<void> _onSignup() async {
     if (!_formKey.currentState!.validate()) return;
     await ref.read(authProvider.notifier).signup(
-          _nameController.text.trim(),
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
+      _nameController.text.trim(),
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(authProvider);
-    final cs = Theme.of(context).colorScheme;
+    final cs = context.colorScheme;
+    final a = context.aurora;
 
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.isSmall(context) ? 24 : 48,
+            ),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [cs.primary, cs.primary.withAlpha(180)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
+                      gradient: a.primaryAurora,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: a.electricBlue.withAlpha(50),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
-                    child: const Icon(Icons.cloud_rounded, color: Colors.white, size: 40),
+                    child: const Icon(
+                      Icons.cloud_rounded,
+                      color: Colors.white,
+                      size: 44,
+                    ),
+                  ).animate().fadeIn(duration: 500.ms).scaleXY(
+                    begin: 0.8,
+                    end: 1.0,
+                    duration: 500.ms,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
                   Text(
                     'Create Account',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                    style: context.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                    ),
+                  ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
                   const SizedBox(height: 8),
                   Text(
                     'Start hosting your images for free',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                  ),
+                    style: TextStyle(
+                      color: cs.onSurfaceVariant,
+                      fontSize: 15,
+                    ),
+                  ).animate().fadeIn(duration: 400.ms, delay: 200.ms),
                   const SizedBox(height: 40),
-                  AuthField(
-                    label: 'Full Name',
-                    hint: 'Enter your name',
-                    controller: _nameController,
-                    validator: Validators.name,
-                    textInputAction: TextInputAction.next,
-                    prefixIcon: const Icon(Icons.person_outlined),
-                  ),
-                  const SizedBox(height: 16),
-                  AuthField(
-                    label: 'Email Address',
-                    hint: 'Enter your email',
-                    controller: _emailController,
-                    validator: Validators.email,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    prefixIcon: const Icon(Icons.email_outlined),
-                  ),
-                  const SizedBox(height: 16),
-                  AuthField(
-                    label: 'Password',
-                    hint: 'Min 6 characters',
-                    controller: _passwordController,
-                    validator: Validators.password,
-                    obscureText: _obscurePassword,
-                    textInputAction: TextInputAction.next,
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                      ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  _AnimatedField(
+                    delay: 200,
+                    child: AuthField(
+                      label: 'Full Name',
+                      hint: 'Your name',
+                      controller: _nameController,
+                      validator: Validators.name,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: const Icon(Icons.person_outlined),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  AuthField(
-                    label: 'Confirm Password',
-                    hint: 'Confirm your password',
-                    controller: _confirmController,
-                    validator: (v) => Validators.confirmPassword(v, _passwordController.text),
-                    obscureText: _obscureConfirm,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _onSignup(),
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  const SizedBox(height: 18),
+                  _AnimatedField(
+                    delay: 250,
+                    child: AuthField(
+                      label: 'Email Address',
+                      hint: 'you@example.com',
+                      controller: _emailController,
+                      validator: Validators.email,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  _AnimatedField(
+                    delay: 300,
+                    child: AuthField(
+                      label: 'Password',
+                      hint: 'Min 6 characters',
+                      controller: _passwordController,
+                      validator: Validators.password,
+                      obscureText: _obscurePassword,
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: const Icon(Icons.lock_outlined),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscurePassword = !_obscurePassword),
                       ),
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  _AnimatedField(
+                    delay: 350,
+                    child: AuthField(
+                      label: 'Confirm Password',
+                      hint: 'Confirm your password',
+                      controller: _confirmController,
+                      validator: (v) =>
+                          Validators.confirmPassword(v, _passwordController.text),
+                      obscureText: _obscureConfirm,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _onSignup(),
+                      prefixIcon: const Icon(Icons.lock_outlined),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirm
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
+                      ),
                     ),
                   ),
                   if (state.error != null) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: cs.errorContainer.withAlpha(50),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    const SizedBox(height: 16),
+                    GlassCard(
+                      gradient: cs.error.withAlpha(20),
+                      borderColor: cs.error.withAlpha(50),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       child: Row(
                         children: [
                           Icon(Icons.error_outline, color: cs.error, size: 20),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               state.error!.replaceAll('AppException: ', ''),
@@ -154,21 +191,18 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           ),
                         ],
                       ),
-                    ),
+                    ).animate().fadeIn(duration: 300.ms),
                   ],
                   const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: state.status == AuthStatus.loading ? null : _onSignup,
-                      child: state.status == AuthStatus.loading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Create Account'),
-                    ),
+                  GlassButton(
+                    label: 'Create Account',
+                    icon: Icons.person_add_rounded,
+                    onPressed:
+                        state.status == AuthStatus.loading ? null : _onSignup,
+                    loading: state.status == AuthStatus.loading,
+                  ).animate().fadeIn(duration: 400.ms, delay: 400.ms).slideY(
+                    begin: 0.02,
+                    end: 0,
                   ),
                   const SizedBox(height: 24),
                   Row(
@@ -178,12 +212,23 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         'Already have an account? ',
                         style: TextStyle(color: cs.onSurfaceVariant),
                       ),
-                      TextButton(
-                        onPressed: () => context.go(Routes.login),
-                        child: const Text('Sign In'),
+                      GestureDetector(
+                        onTap: () => context.go(Routes.login),
+                        child: ShaderMask(
+                          shaderCallback: (bounds) =>
+                              a.accentGlow.createShader(bounds),
+                          child: Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: cs.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
-                  ),
+                  ).animate().fadeIn(duration: 400.ms, delay: 450.ms),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -191,5 +236,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         ),
       ),
     );
+  }
+}
+
+class _AnimatedField extends StatelessWidget {
+  final int delay;
+  final Widget child;
+
+  const _AnimatedField({required this.delay, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return child.animate().fadeIn(
+      duration: 400.ms,
+      delay: delay.ms,
+    ).slideX(begin: -0.02, end: 0);
   }
 }

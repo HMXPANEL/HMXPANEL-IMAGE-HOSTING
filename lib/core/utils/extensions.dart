@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'responsive.dart';
 
 extension BuildContextX on BuildContext {
   ThemeData get theme => Theme.of(this);
@@ -7,19 +8,14 @@ extension BuildContextX on BuildContext {
   MediaQueryData get mediaQuery => MediaQuery.of(this);
   Size get screenSize => mediaQuery.size;
   bool get isDark => theme.brightness == Brightness.dark;
-  bool get isSmallScreen => screenSize.width < 600;
-  bool get isMediumScreen => screenSize.width >= 600 && screenSize.width < 900;
-  bool get isLargeScreen => screenSize.width >= 900;
 
-  void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? colorScheme.error : null,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
+  bool get isSmall => ResponsiveUtils.isSmall(this);
+  bool get isMedium => ResponsiveUtils.isMedium(this);
+  bool get isLarge => ResponsiveUtils.isLarge(this);
+  bool get isTablet => ResponsiveUtils.isTablet(this);
+  bool get isDesktop => ResponsiveUtils.isDesktop(this);
+
+  EdgeInsets get responsivePadding => ResponsiveUtils.padding(this);
 }
 
 extension StringX on String {
@@ -40,6 +36,9 @@ extension StringX on String {
 
 extension DateTimeX on DateTime {
   bool get isExpired => DateTime.now().isAfter(this);
-
   Duration get remaining => difference(DateTime.now());
+}
+
+extension FileNameX on String {
+  String get fileName => split('/').last;
 }
