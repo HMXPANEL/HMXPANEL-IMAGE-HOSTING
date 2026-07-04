@@ -6,6 +6,7 @@ import '../../upload/presentation/upload_provider.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/theme/premium_extensions.dart';
 import '../../../core/utils/extensions.dart';
+import '../../../core/utils/responsive.dart';
 
 class ProfileSheet extends ConsumerWidget {
   const ProfileSheet({super.key});
@@ -33,7 +34,7 @@ class ProfileSheet extends ConsumerWidget {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 28),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -47,11 +48,12 @@ class ProfileSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Container(
-              width: 80,
-              height: 80,
+              width: ResponsiveUtils.isSmall(context) ? 64 : 80,
+              height: ResponsiveUtils.isSmall(context) ? 64 : 80,
               decoration: BoxDecoration(
                 gradient: a.primaryAurora,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(
+                    ResponsiveUtils.isSmall(context) ? 18 : 24),
                 boxShadow: [
                   BoxShadow(
                     color: a.electricBlue.withAlpha(50),

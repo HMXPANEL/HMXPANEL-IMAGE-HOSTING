@@ -64,13 +64,12 @@ class ImageSearchDelegate extends SearchDelegate<String?> {
         iconGradient: context.aurora.primaryAurora,
         action: Padding(
           padding: const EdgeInsets.only(top: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+          child: Wrap(
+            spacing: 8,
+            alignment: WrapAlignment.center,
             children: [
               GlassChip(label: 'Recent', icon: Icons.schedule_rounded, onTap: () => query = 'recent:'),
-              const SizedBox(width: 8),
               GlassChip(label: 'Favorites', icon: Icons.favorite_outline_rounded, onTap: () => query = 'fav:'),
-              const SizedBox(width: 8),
               GlassChip(label: 'Expiring', icon: Icons.timer_outlined, onTap: () => query = 'expiring:'),
             ],
           ),

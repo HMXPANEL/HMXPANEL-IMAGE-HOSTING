@@ -66,55 +66,59 @@ class _FilesPageState extends ConsumerState<FilesPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: ResponsiveUtils.isSmall(context) ? 180 : 200,
+            expandedHeight: ResponsiveUtils.isSmall(context) ? 240 : 260,
             pinned: true,
             stretch: true,
             backgroundColor: Colors.transparent,
             foregroundColor: cs.onSurface,
             flexibleSpace: FlexibleSpaceBar(
-              background: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  ResponsiveUtils.padding(context).left,
-                  MediaQuery.of(context).padding.top + 60,
-                  ResponsiveUtils.padding(context).right,
-                  0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'File Manager',
-                      style: context.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
+              background: LayoutBuilder(
+                builder: (_, constraints) {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(
+                      ResponsiveUtils.padding(context).left,
+                      MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
+                      ResponsiveUtils.padding(context).right,
+                      16,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${filteredUploads.length} of ${state.uploads.length} items',
-                      style: TextStyle(
-                        color: cs.onSurfaceVariant,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildSearchBar(context, cs, g),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 36,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _filters.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 8),
-                        itemBuilder: (_, i) => GlassChip(
-                          label: _filters[i],
-                          selected: _selectedFilter == i,
-                          onTap: () => setState(() => _selectedFilter = i),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'File Manager',
+                          style: context.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${filteredUploads.length} of ${state.uploads.length} items',
+                          style: TextStyle(
+                            color: cs.onSurfaceVariant,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildSearchBar(context, cs, g),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 36,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _filters.length,
+                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            itemBuilder: (_, i) => GlassChip(
+                              label: _filters[i],
+                              selected: _selectedFilter == i,
+                              onTap: () => setState(() => _selectedFilter = i),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ),
@@ -123,7 +127,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
               ResponsiveUtils.padding(context).left,
               16,
               ResponsiveUtils.padding(context).right,
-              ResponsiveUtils.padding(context).bottom + 120,
+              ResponsiveUtils.bottomNavHeight(context),
             ),
             sliver: state.isLoading
                 ? const SliverFillRemaining(
@@ -154,14 +158,12 @@ class _FilesPageState extends ConsumerState<FilesPage> {
                     : SliverGrid(
                         gridDelegate:
                             SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: ResponsiveUtils.isLarge(context)
-                              ? 4
-                              : ResponsiveUtils.isMedium(context)
-                                  ? 3
-                                  : 2,
+                          crossAxisCount:
+                              ResponsiveUtils.gridColumnCount(context),
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 0.85,
+                          childAspectRatio:
+                              ResponsiveUtils.isSmall(context) ? 0.75 : 0.8,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (_, index) {

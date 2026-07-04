@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart' show Share;
 import '../../upload/domain/upload_model.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/extensions.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/download_helper.dart';
 
@@ -49,7 +50,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 16 : 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -66,16 +67,21 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
               borderRadius: BorderRadius.circular(20),
               child: Container(
                 color: Colors.black,
-                child: CachedNetworkImage(
-                  imageUrl: upload.displayUrl ?? upload.url,
-                  fit: BoxFit.contain,
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  placeholder: (_, __) => const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.35,
+                    minHeight: 180,
                   ),
-                  errorWidget: (_, __, ___) => const Center(
-                    child: Icon(Icons.broken_image_outlined, size: 48, color: Colors.white54),
+                  child: CachedNetworkImage(
+                    imageUrl: upload.displayUrl ?? upload.url,
+                    fit: BoxFit.contain,
+                    width: double.infinity,
+                    placeholder: (_, __) => const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    ),
+                    errorWidget: (_, __, ___) => const Center(
+                      child: Icon(Icons.broken_image_outlined, size: 48, color: Colors.white54),
+                    ),
                   ),
                 ),
               ),

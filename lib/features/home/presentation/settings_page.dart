@@ -75,20 +75,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             backgroundColor: Colors.transparent,
             foregroundColor: cs.onSurface,
             flexibleSpace: FlexibleSpaceBar(
-              background: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  ResponsiveUtils.padding(context).left,
-                  MediaQuery.of(context).padding.top + 60,
-                  ResponsiveUtils.padding(context).right,
-                  0,
-                ),
-                child: Column(
-                  children: [
-                    _buildProfileCard(context, cs, g, a, user),
-                    const SizedBox(height: 16),
-                    _buildStorageCard(context, cs, g, upload),
-                  ],
-                ),
+              background: LayoutBuilder(
+                builder: (_, constraints) {
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(
+                      ResponsiveUtils.padding(context).left,
+                      MediaQuery.of(context).padding.top + 60,
+                      ResponsiveUtils.padding(context).right,
+                      16,
+                    ),
+                    child: Column(
+                      children: [
+                        _buildProfileCard(context, cs, g, a, user),
+                        const SizedBox(height: 16),
+                        _buildStorageCard(context, cs, g, upload),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -97,7 +101,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               ResponsiveUtils.padding(context).left,
               16,
               ResponsiveUtils.padding(context).right,
-              ResponsiveUtils.padding(context).bottom + 140,
+              ResponsiveUtils.bottomNavHeight(context),
             ),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
@@ -137,11 +141,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: ResponsiveUtils.isSmall(context) ? 52 : 64,
+            height: ResponsiveUtils.isSmall(context) ? 52 : 64,
             decoration: BoxDecoration(
               gradient: a.primaryAurora,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(
+                  ResponsiveUtils.isSmall(context) ? 16 : 20),
               boxShadow: [
                 BoxShadow(
                   color: a.electricBlue.withAlpha(50),

@@ -38,19 +38,18 @@ class ResponsiveUtils {
     return const EdgeInsets.symmetric(horizontal: 16);
   }
 
-  static double gridColumnCount(BuildContext context) {
+  static int gridColumnCount(BuildContext context) {
     final w = screenWidth(context);
-    if (w >= AppBreakpoints.xlarge) return 4;
-    if (w >= AppBreakpoints.large) return 3;
-    if (w >= AppBreakpoints.medium) return 2;
+    if (w >= AppBreakpoints.xlarge) return 5;
+    if (w >= AppBreakpoints.large) return 4;
+    if (w >= AppBreakpoints.medium) return 3;
     return 2;
   }
 
-  static EdgeInsets bottomNavPadding(BuildContext context) {
-    final bottom = MediaQuery.of(context).padding.bottom;
-    if (isDesktop(context)) return EdgeInsets.only(bottom: bottom + 24, left: 48, right: 48);
-    if (isTablet(context)) return EdgeInsets.only(bottom: bottom + 16, left: 32, right: 32);
-    return EdgeInsets.only(bottom: bottom + 8, left: 16, right: 16);
+  /// Returns bottom padding that accounts for the nav bar height + safe area.
+  /// Use this instead of hardcoded `bottom + 120` values.
+  static double bottomNavHeight(BuildContext context) {
+    return kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom + 8;
   }
 
   static double bottomNavWidth(BuildContext context) {
@@ -58,9 +57,6 @@ class ResponsiveUtils {
     if (isTablet(context)) return 500;
     return double.infinity;
   }
-
-  static bool isLandscape(BuildContext context) =>
-      MediaQuery.of(context).orientation == Orientation.landscape;
 }
 
 class ResponsiveWidget extends StatelessWidget {
@@ -109,7 +105,7 @@ class AdaptiveGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final columns = ResponsiveUtils.gridColumnCount(context).round();
+    final columns = ResponsiveUtils.gridColumnCount(context);
     return GridView.builder(
       shrinkWrap: shrinkWrap,
       physics: physics ?? const NeverScrollableScrollPhysics(),
@@ -118,7 +114,7 @@ class AdaptiveGrid extends StatelessWidget {
         crossAxisCount: columns,
         crossAxisSpacing: spacing,
         mainAxisSpacing: runSpacing,
-        childAspectRatio: childAspectRatio ?? (ResponsiveUtils.isSmall(context) ? 0.85 : 0.9),
+        childAspectRatio: childAspectRatio ?? (ResponsiveUtils.isSmall(context) ? 0.8 : 0.85),
       ),
       itemCount: itemCount,
       itemBuilder: itemBuilder,

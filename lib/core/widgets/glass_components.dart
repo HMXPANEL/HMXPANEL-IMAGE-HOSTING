@@ -403,7 +403,7 @@ class GlassBottomNav extends StatelessWidget {
               children: List.generate(items.length, (i) {
                 final item = items[i];
                 final selected = i == selectedIndex;
-                return Expanded(
+                return Flexible(
                   child: _GlassNavItemWidget(
                     item: item,
                     selected: selected,
@@ -453,13 +453,15 @@ class _GlassNavItemWidget extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(100),
-        child: AnimatedContainer(
-          duration: 300.ms,
-          curve: Curves.easeOutCubic,
-          padding: EdgeInsets.symmetric(
-            horizontal: selected ? 20 : 12,
-            vertical: 10,
-          ),
+          child: AnimatedContainer(
+            duration: 300.ms,
+            curve: Curves.easeOutCubic,
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveUtils.isSmall(context)
+                  ? (selected ? 14 : 8)
+                  : (selected ? 20 : 12),
+              vertical: 10,
+            ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
             gradient: selected ? a.accentGlow : null,
@@ -896,7 +898,7 @@ class GlassEmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

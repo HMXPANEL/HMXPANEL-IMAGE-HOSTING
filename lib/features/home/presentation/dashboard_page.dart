@@ -24,9 +24,9 @@ class DashboardPage extends ConsumerWidget {
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         ResponsiveUtils.padding(context).left,
-        MediaQuery.of(context).padding.top + 80,
+        MediaQuery.of(context).padding.top + kToolbarHeight + 8,
         ResponsiveUtils.padding(context).right,
-        ResponsiveUtils.padding(context).bottom + 120,
+        ResponsiveUtils.bottomNavHeight(context),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,24 +102,25 @@ class DashboardPage extends ConsumerWidget {
 
   Widget _buildCloudIllustration(BuildContext context) {
     final a = context.aurora;
+    final size = ResponsiveUtils.isSmall(context) ? 80.0 : 100.0;
     return Container(
-      width: 100,
-      height: 100,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         gradient: a.primaryAurora,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(size * 0.3),
         boxShadow: [
           BoxShadow(
             color: a.electricBlue.withAlpha(50),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
+            blurRadius: size * 0.3,
+            offset: const Offset(0, size * 0.1),
           ),
         ],
       ),
       child: Center(
         child: Icon(
           Icons.cloud_rounded,
-          size: 48,
+          size: size * 0.48,
           color: Colors.white.withAlpha(220),
         ),
       ),

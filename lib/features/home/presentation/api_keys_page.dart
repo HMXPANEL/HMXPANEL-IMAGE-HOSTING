@@ -27,7 +27,7 @@ class ApiKeysPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: ResponsiveUtils.isSmall(context) ? 140 : 160,
+            expandedHeight: ResponsiveUtils.isSmall(context) ? 160 : 180,
             pinned: true,
             backgroundColor: Colors.transparent,
             foregroundColor: context.colorScheme.onSurface,
@@ -67,7 +67,7 @@ class ApiKeysPage extends ConsumerWidget {
               ResponsiveUtils.padding(context).left,
               16,
               ResponsiveUtils.padding(context).right,
-              ResponsiveUtils.padding(context).bottom + 120,
+              ResponsiveUtils.bottomNavHeight(context),
             ),
             sliver: state.apiKeys.isEmpty
                 ? SliverFillRemaining(
@@ -211,7 +211,7 @@ class _AddApiKeySheetState extends State<_AddApiKeySheet> {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 24),
         child: Form(
           key: _formKey,
           child: Column(

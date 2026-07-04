@@ -159,8 +159,13 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
         ],
       ),
-      floatingActionButton: GlassFAB(
-        onPressed: () => UploadSheet.show(context),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom > 0 ? 0 : 8,
+        ),
+        child: GlassFAB(
+          onPressed: () => UploadSheet.show(context),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     ).animate().fadeIn(duration: 500.ms);
