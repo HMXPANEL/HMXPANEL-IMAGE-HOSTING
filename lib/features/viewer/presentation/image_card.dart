@@ -4,7 +4,6 @@ import '../../upload/domain/upload_model.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/widgets/glass_components.dart';
-import '../../../core/utils/responsive.dart';
 
 class ImageCard extends StatelessWidget {
   final Upload upload;
@@ -17,22 +16,6 @@ class ImageCard extends StatelessWidget {
     required this.onTap,
     this.onDownload,
   });
-
-  static double kVerticalOverhead(BuildContext context) {
-    final isSmall = ResponsiveUtils.isSmall(context);
-    final pad = isSmall ? 6.0 : 8.0;
-    final textH = isSmall ? 13.0 : 14.0;
-    const metaH = 16.0;
-    const badgeH = 14.0;
-    return pad * 2 + textH + metaH + badgeH;
-  }
-
-  static double expectedAspectRatio(BuildContext context, double cardWidth) {
-    const imageAspect = 1.18;
-    final imageH = cardWidth / imageAspect;
-    final totalH = imageH + kVerticalOverhead(context);
-    return cardWidth / totalH;
-  }
 
   @override
   Widget build(BuildContext context) {

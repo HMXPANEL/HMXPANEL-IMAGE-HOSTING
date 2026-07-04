@@ -132,13 +132,16 @@ class ResponsiveUtils {
     const spacing = AppSpacing.grid;
     final w = (avail - (cols - 1) * spacing) / cols;
     const imageAspect = 1.18;
-    final sf = scaleFactor(context);
     final isSm = isSmall(context);
     final pad = isSm ? 6.0 : 8.0;
-    const metaH = 16.0;
-    const badgeH = 14.0;
-    final textH = (isSm ? 11.0 : 12.0) * sf;
-    final overhead = pad * 2 + textH + metaH + badgeH;
+    // ponytail: text renders at ~1.4× fontSize due to line-height.
+    // No scaleFactor here — the Text widget uses plain fontSize, not a scaled one.
+    final textH = isSm ? 16.0 : 17.0;
+    const gap = 2.0;        // SizedBox(height: 2) after filename
+    const metaH = 16.0;     // timestamp row: icon(10) + text(~14) + download icon(16)
+    const badgeGap = 2.0;   // Padding.only(top: 2) before badge
+    const badgeH = 18.0;    // top(2) + container-vpad(4) + content(~12)
+    final overhead = pad * 2 + textH + gap + metaH + badgeGap + badgeH;
     final totalH = w / imageAspect + overhead;
     return (w / totalH).clamp(0.7, 1.0);
   }
