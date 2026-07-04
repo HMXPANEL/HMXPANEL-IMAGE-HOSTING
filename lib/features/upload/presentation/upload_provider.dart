@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -70,9 +71,13 @@ class UploadNotifier extends StateNotifier<UploadState> {
   final Ref _ref;
   final ImagePicker _picker = ImagePicker();
 
+  // ponytail: defer Firestore listener setup so provider creation doesn't
+  // block the first build/transition frame
   UploadNotifier(this._repository, this._ref) : super(const UploadState()) {
-    _watchUploads();
-    _watchApiKeys();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _watchUploads();
+      _watchApiKeys();
+    });
   }
 
   void _watchUploads() {

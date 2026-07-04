@@ -24,7 +24,6 @@ class App extends ConsumerWidget {
       routerConfig: router,
       builder: (context, child) {
         return AuroraBackground(
-          blur: 80,
           opacity: 0.15,
           child: child!,
         );
