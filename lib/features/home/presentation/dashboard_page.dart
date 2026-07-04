@@ -302,10 +302,10 @@ class DashboardPage extends ConsumerWidget {
             )
           : null,
       child: state.isLoading
-          ? const SizedBox(
-              height: 200,
-              child: Center(child: CircularProgressIndicator()),
-            )
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Center(child: CircularProgressIndicator()),
+                )
           : recent.isEmpty
               ? GlassEmptyState(
                   icon: Icons.image_outlined,

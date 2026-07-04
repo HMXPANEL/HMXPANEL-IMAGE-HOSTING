@@ -182,6 +182,12 @@ class UploadRepository {
     }
   }
 
+  Future<void> updateUploadExpiration(String id, DateTime expiration) async {
+    await _uploadsRef.doc(id).update({
+      'expiration': Timestamp.fromDate(expiration),
+    });
+  }
+
   Future<void> deleteUpload(String id) async {
     await _uploadsRef.doc(id).delete();
   }

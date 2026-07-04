@@ -20,25 +20,7 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage>
-    with TickerProviderStateMixin {
-  late AnimationController _fabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _fabController = AnimationController(
-      vsync: this,
-      duration: 300.ms,
-    )..forward();
-  }
-
-  @override
-  void dispose() {
-    _fabController.dispose();
-    super.dispose();
-  }
-
+class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final cs = context.colorScheme;
@@ -49,7 +31,7 @@ class _HomePageState extends ConsumerState<HomePage>
       extendBodyBehindAppBar: true,
       appBar: tabIndex == 0
           ? AppBar(
-              toolbarHeight: 72,
+              toolbarHeight: ResponsiveUtils.isSmall(context) ? 64 : 72,
               leading: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: IconButton(
@@ -120,21 +102,14 @@ class _HomePageState extends ConsumerState<HomePage>
               preferredSize: Size.zero,
               child: SizedBox.shrink(),
             ),
-      body: AnimatedSwitcher(
-        duration: 350.ms,
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        child: KeyedSubtree(
-          key: ValueKey(tabIndex),
-          child: _pages[tabIndex],
-        ),
+      body: IndexedStack(
+        index: tabIndex,
+        children: _pages,
       ),
       bottomNavigationBar: GlassBottomNav(
         selectedIndex: tabIndex,
         onTap: (i) {
           ref.read(tabIndexProvider.notifier).state = i;
-          _fabController.reset();
-          _fabController.forward();
         },
         items: const [
           GlassNavItem(
@@ -161,7 +136,7 @@ class _HomePageState extends ConsumerState<HomePage>
       ),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).padding.bottom > 0 ? 0 : 8,
+          bottom: kBottomNavigationBarHeight + 16,
         ),
         child: GlassFAB(
           onPressed: () => UploadSheet.show(context),

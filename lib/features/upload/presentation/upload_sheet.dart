@@ -82,7 +82,7 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(
-          vertical: ResponsiveUtils.isSmall(context) ? 36 : 56,
+          vertical: ResponsiveUtils.isSmall(context) ? 28 : 48,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -155,7 +155,7 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
               child: Image.file(
                 file,
                 width: double.infinity,
-                height: ResponsiveUtils.isSmall(context) ? 220 : 300,
+                height: ResponsiveUtils.isSmall(context) ? 180 : 260,
                 fit: BoxFit.cover,
               ),
             ),

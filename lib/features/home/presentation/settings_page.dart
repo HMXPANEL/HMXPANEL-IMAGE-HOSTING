@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth/local_auth.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../upload/presentation/upload_provider.dart';
 import 'profile_sheet.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/premium_extensions.dart';
+import '../../../core/providers/settings_provider.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/utils/responsive.dart';
@@ -30,29 +32,61 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   ];
 
   bool _uploadNotify = true;
-  bool _autoDeleteNotify = false;
   bool _biometricAuth = false;
-  bool _hideApiKeys = true;
+  bool _biometricAvailable = false;
+  bool _biometricChecking = true;
+  final LocalAuthentication _localAuth = LocalAuthentication();
 
   @override
   void initState() {
     super.initState();
     _loadSettings();
+    _checkBiometrics();
   }
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _uploadNotify = prefs.getBool('upload_notify') ?? true;
-      _autoDeleteNotify = prefs.getBool('auto_delete_notify') ?? false;
-      _biometricAuth = prefs.getBool('biometric_auth') ?? false;
-      _hideApiKeys = prefs.getBool('hide_api_keys') ?? true;
-    });
+    if (mounted) {
+      setState(() {
+        _uploadNotify = prefs.getBool('upload_notify') ?? true;
+        _biometricAuth = prefs.getBool('biometric_auth') ?? false;
+      });
+    }
   }
 
-  Future<void> _saveSetting(String key, bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(key, value);
+  Future<void> _checkBiometrics() async {
+    try {
+      final available = await _localAuth.canCheckBiometrics;
+      final enrolled = await _localAuth.isDeviceSupported();
+      if (mounted) {
+        setState(() {
+          _biometricAvailable = available && enrolled;
+          _biometricChecking = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _biometricAvailable = false;
+          _biometricChecking = false;
+        });
+      }
+    }
+  }
+
+  Future<bool> _authenticateBiometric() async {
+    try {
+      final authenticated = await _localAuth.authenticate(
+        localizedReason: 'Authenticate to enable biometric lock',
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+      return authenticated;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override
@@ -63,6 +97,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final g = context.glass;
     final a = context.aurora;
     final user = auth.user;
+    final autoDelete = ref.watch(autoDeleteProvider);
 
     return Scaffold(
       extendBody: true,
@@ -71,28 +106,27 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         slivers: [
           SliverAppBar(
             expandedHeight: ResponsiveUtils.isSmall(context) ? 340 : 380,
+            collapsedHeight: ResponsiveUtils.isSmall(context) ? 100 : 110,
             pinned: true,
             backgroundColor: Colors.transparent,
             foregroundColor: cs.onSurface,
             flexibleSpace: FlexibleSpaceBar(
-              background: LayoutBuilder(
-                builder: (_, constraints) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      ResponsiveUtils.padding(context).left,
-                      MediaQuery.of(context).padding.top + 60,
-                      ResponsiveUtils.padding(context).right,
-                      16,
-                    ),
-                    child: Column(
-                      children: [
-                        _buildProfileCard(context, cs, g, a, user),
-                        const SizedBox(height: 16),
-                        _buildStorageCard(context, cs, g, upload),
-                      ],
-                    ),
-                  );
-                },
+              collapseMode: CollapseMode.parallax,
+              background: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveUtils.padding(context).left,
+                  MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
+                  ResponsiveUtils.padding(context).right,
+                  16,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildProfileCard(context, cs, g, a, user),
+                    const SizedBox(height: 16),
+                    _buildStorageCard(context, cs, g, upload),
+                  ],
+                ),
               ),
             ),
           ),
@@ -107,7 +141,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               delegate: SliverChildListDelegate([
                 _buildAppearanceSection(context, cs),
                 const SizedBox(height: 12),
-                _buildNotificationsSection(context, cs),
+                _buildNotificationsSection(context, cs, autoDelete),
                 const SizedBox(height: 12),
                 _buildSecuritySection(context, cs),
                 const SizedBox(height: 12),
@@ -137,16 +171,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       BuildContext context, ColorScheme cs, GlassThemeExtension g, AuroraThemeExtension a, user) {
     return GlassCard(
       gradient: g.glassSurface,
-      padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 24),
+      padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 16 : 24),
       child: Row(
         children: [
           Container(
-            width: ResponsiveUtils.isSmall(context) ? 52 : 64,
-            height: ResponsiveUtils.isSmall(context) ? 52 : 64,
+            width: ResponsiveUtils.isSmall(context) ? 48 : 64,
+            height: ResponsiveUtils.isSmall(context) ? 48 : 64,
             decoration: BoxDecoration(
               gradient: a.primaryAurora,
               borderRadius: BorderRadius.circular(
-                  ResponsiveUtils.isSmall(context) ? 16 : 20),
+                  ResponsiveUtils.isSmall(context) ? 14 : 20),
               boxShadow: [
                 BoxShadow(
                   color: a.electricBlue.withAlpha(50),
@@ -158,34 +192,36 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             child: Center(
               child: Text(
                 ((user?.displayName?.isNotEmpty == true ? user!.displayName : 'U')[0]).toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: ResponsiveUtils.isSmall(context) ? 24 : 28,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   user?.displayName ?? 'User',
-                  style: context.textTheme.titleLarge?.copyWith(
+                  style: context.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   user?.email ?? '',
                   style: TextStyle(
                     color: cs.onSurfaceVariant,
-                    fontSize: 14,
+                    fontSize: 13,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 GlassBadge(
                   label: 'Free Plan',
                   color: a.electricBlue,
@@ -194,7 +230,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.edit_outlined, color: cs.onSurfaceVariant),
+            icon: Icon(Icons.edit_outlined, color: cs.onSurfaceVariant, size: 20),
             onPressed: () => ProfileSheet.show(context),
           ),
         ],
@@ -216,37 +252,38 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             children: [
               Icon(Icons.storage_rounded, size: 18, color: cs.onSurfaceVariant),
               const SizedBox(width: 8),
-              Text(
-                'Storage Usage',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: cs.onSurface,
+              Expanded(
+                child: Text(
+                  'Storage Usage',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
                 ),
               ),
-              const Spacer(),
               Text(
                 '${Formatters.bytes(totalSize)} / 100 MB',
                 style: TextStyle(
                   color: cs.onSurfaceVariant,
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           GlassProgressBar(value: percent, height: 8),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Row(
             children: [
               Text(
                 '${upload.uploads.length} images',
-                style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+                style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11),
               ),
               const Spacer(),
               Text(
                 '${(percent * 100).round()}% used',
-                style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+                style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11),
               ),
             ],
           ),
@@ -280,17 +317,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             title: 'Accent Color',
             subtitle: 'Choose your accent color',
             trailing: SizedBox(
-              height: 32,
+              height: 28,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
                 itemCount: _accentColors.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, __) => const SizedBox(width: 6),
                 itemBuilder: (_, i) => GestureDetector(
                   onTap: () => ref.read(accentColorProvider.notifier).setColor(_accentColors[i]),
                   child: Container(
-                    width: 32,
-                    height: 32,
+                    width: 28,
+                    height: 28,
                     decoration: BoxDecoration(
                       color: _accentColors[i],
                       shape: BoxShape.circle,
@@ -312,7 +349,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _buildNotificationsSection(BuildContext context, ColorScheme cs) {
+  Widget _buildNotificationsSection(
+      BuildContext context, ColorScheme cs, AutoDeleteSetting autoDelete) {
     return GlassSection(
       title: 'Notifications',
       subtitle: 'Manage your alerts',
@@ -336,18 +374,281 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           _SettingRow(
             icon: Icons.delete_outline_rounded,
             title: 'Auto Delete',
-            subtitle: 'Notify when images expire',
+            subtitle: autoDelete.enabled
+                ? _autoDeleteLabel(autoDelete)
+                : 'Auto-delete old uploads',
             trailing: Switch(
-              value: _autoDeleteNotify,
-              onChanged: (v) {
-                setState(() => _autoDeleteNotify = v);
-                _saveSetting('auto_delete_notify', v);
-              },
+              value: autoDelete.enabled,
+              onChanged: (v) => _handleAutoDeleteToggle(context, v),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _autoDeleteLabel(AutoDeleteSetting setting) {
+    if (!setting.enabled) return 'Disabled';
+    if (setting.duration == AutoDeleteDuration.never) return 'Disabled';
+    if (setting.duration == AutoDeleteDuration.custom) {
+      return 'After ${setting.customHours}h';
+    }
+    const labels = {
+      AutoDeleteDuration.oneHour: 'After 1 Hour',
+      AutoDeleteDuration.sixHours: 'After 6 Hours',
+      AutoDeleteDuration.twelveHours: 'After 12 Hours',
+      AutoDeleteDuration.oneDay: 'After 1 Day',
+      AutoDeleteDuration.sevenDays: 'After 7 Days',
+      AutoDeleteDuration.thirtyDays: 'After 30 Days',
+    };
+    return labels[setting.duration] ?? 'Disabled';
+  }
+
+  void _handleAutoDeleteToggle(BuildContext context, bool value) {
+    if (!value) {
+      ref.read(autoDeleteProvider.notifier).save(
+        const AutoDeleteSetting(enabled: false),
+      );
+      return;
+    }
+    _showAutoDeleteSheet(context);
+  }
+
+  void _showAutoDeleteSheet(BuildContext context) {
+    final cs = this.context.colorScheme;
+    final a = this.context.aurora;
+    AutoDeleteDuration selectedDuration = AutoDeleteDuration.oneDay;
+    int customHours = 24;
+    final customCtrl = TextEditingController(text: '24');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: GlassCard(
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.all(ResponsiveUtils.isSmall(ctx) ? 20 : 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(
+                      color: cs.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Container(
+                      width: 44, height: 44,
+                      decoration: BoxDecoration(
+                        gradient: a.accentGlow,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Auto Delete',
+                            style: context.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'When should uploaded images be deleted?',
+                            style: TextStyle(
+                              color: cs.onSurfaceVariant,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ...AutoDeleteDuration.values.map((d) {
+                  if (d == AutoDeleteDuration.custom) {
+                    return Column(
+                      children: [
+                        _DurationOption(
+                          label: _durationLabel(d),
+                          selected: selectedDuration == d,
+                          onTap: () => setSheetState(() => selectedDuration = d),
+                        ),
+                        if (selectedDuration == d) ...[
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: customCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: 'Hours',
+                                    filled: true,
+                                    isDense: true,
+                                  ),
+                                  onChanged: (v) {
+                                    customHours = int.tryParse(v) ?? 1;
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextField(
+                                  controller: TextEditingController(
+                                    text: customHours >= 24
+                                        ? '${customHours ~/ 24}'
+                                        : '',
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: 'Days',
+                                    filled: true,
+                                    isDense: true,
+                                  ),
+                                  onChanged: (v) {
+                                    final days = int.tryParse(v) ?? 0;
+                                    if (days > 0) {
+                                      customCtrl.text = '${days * 24}';
+                                      customHours = days * 24;
+                                    }
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  controller: TextEditingController(
+                                    text: customHours >= 168
+                                        ? '${customHours ~/ 168}'
+                                        : '',
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: 'Weeks',
+                                    filled: true,
+                                    isDense: true,
+                                  ),
+                                  onChanged: (v) {
+                                    final weeks = int.tryParse(v) ?? 0;
+                                    if (weeks > 0) {
+                                      customCtrl.text = '${weeks * 168}';
+                                      customHours = weeks * 168;
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.amber.withAlpha(15),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.amber.withAlpha(30)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.info_outline, size: 16, color: Colors.amber.shade700),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Only future uploads will follow this rule.',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.amber.shade700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    );
+                  }
+                  return _DurationOption(
+                    label: _durationLabel(d),
+                    selected: selectedDuration == d,
+                    onTap: () => setSheetState(() => selectedDuration = d),
+                  );
+                }),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GlassButton(
+                        label: 'Cancel',
+                        onPressed: () => Navigator.pop(ctx),
+                        expanded: true,
+                        gradient: LinearGradient(
+                          colors: [cs.surfaceContainerHighest, cs.surfaceContainerHighest],
+                        ),
+                        foregroundColor: cs.onSurface,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: GlassButton(
+                        label: 'Save',
+                        onPressed: () {
+                          final hours = selectedDuration == AutoDeleteDuration.custom
+                              ? (int.tryParse(customCtrl.text) ?? 24).clamp(1, 8760)
+                              : null;
+                          ref.read(autoDeleteProvider.notifier).save(
+                            AutoDeleteSetting(
+                              enabled: true,
+                              duration: selectedDuration,
+                              customHours: hours,
+                            ),
+                          );
+                          Navigator.pop(ctx);
+                          GlassSnackBar.show(context, 'Auto delete enabled',
+                              icon: Icons.check_circle_rounded);
+                        },
+                        expanded: true,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _durationLabel(AutoDeleteDuration d) {
+    switch (d) {
+      case AutoDeleteDuration.never: return 'Never';
+      case AutoDeleteDuration.oneHour: return 'After 1 Hour';
+      case AutoDeleteDuration.sixHours: return 'After 6 Hours';
+      case AutoDeleteDuration.twelveHours: return 'After 12 Hours';
+      case AutoDeleteDuration.oneDay: return 'After 1 Day';
+      case AutoDeleteDuration.sevenDays: return 'After 7 Days';
+      case AutoDeleteDuration.thirtyDays: return 'After 30 Days';
+      case AutoDeleteDuration.custom: return 'Custom';
+    }
   }
 
   Widget _buildSecuritySection(BuildContext context, ColorScheme cs) {
@@ -359,29 +660,62 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           _SettingRow(
             icon: Icons.lock_outline_rounded,
             title: 'Biometric Auth',
-            subtitle: 'Require biometrics to open app',
-            trailing: Switch(
-              value: _biometricAuth,
-              onChanged: (v) {
-                setState(() => _biometricAuth = v);
-                _saveSetting('biometric_auth', v);
-              },
-            ),
+            subtitle: _biometricChecking
+                ? 'Checking device support...'
+                : !_biometricAvailable
+                    ? 'Biometric auth not available on this device'
+                    : 'Require biometrics to open app',
+            trailing: _biometricChecking
+                ? SizedBox(
+                    width: 20, height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
+                  )
+                : Switch(
+                    value: _biometricAuth,
+                    onChanged: !_biometricAvailable
+                        ? null
+                        : (v) async {
+                            if (v) {
+                              final authenticated = await _authenticateBiometric();
+                              if (!authenticated) {
+                                if (context.mounted) {
+                                  GlassSnackBar.show(
+                                    context,
+                                    'Authentication failed',
+                                    isError: true,
+                                  );
+                                }
+                                return;
+                              }
+                            }
+                            setState(() => _biometricAuth = v);
+                            _saveSetting('biometric_auth', v);
+                            if (context.mounted) {
+                              GlassSnackBar.show(
+                                context,
+                                v ? 'Biometric auth enabled' : 'Biometric auth disabled',
+                                icon: v ? Icons.check_circle_rounded : null,
+                              );
+                            }
+                          },
+                  ),
           ),
           const SizedBox(height: 4),
           const GlassDivider(),
           const SizedBox(height: 4),
-          _SettingRow(
-            icon: Icons.visibility_off_rounded,
-            title: 'Hide API Keys',
-            subtitle: 'Mask all API keys in the app',
-            trailing: Switch(
-              value: _hideApiKeys,
-              onChanged: (v) {
-                setState(() => _hideApiKeys = v);
-                _saveSetting('hide_api_keys', v);
-              },
-            ),
+          Consumer(
+            builder: (_, ref2, __) {
+              final hideKeys = ref2.watch(hideApiKeysProvider);
+              return _SettingRow(
+                icon: Icons.visibility_off_rounded,
+                title: 'Hide API Keys',
+                subtitle: hideKeys ? 'API keys are masked' : 'API keys are visible',
+                trailing: Switch(
+                  value: hideKeys,
+                  onChanged: (v) => ref2.read(hideApiKeysProvider.notifier).set(v),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -419,6 +753,63 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             trailing: Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _saveSetting(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+}
+
+class _DurationOption extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DurationOption({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = context.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: 200.ms,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: selected ? cs.primaryContainer.withAlpha(60) : Colors.transparent,
+            border: Border.all(
+              color: selected ? cs.primary.withAlpha(80) : cs.outlineVariant,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                size: 20,
+                color: selected ? cs.primary : cs.onSurfaceVariant,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: selected ? cs.onSurface : cs.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -469,8 +860,10 @@ class _SettingRow extends StatelessWidget {
                   subtitle,
                   style: TextStyle(
                     color: cs.onSurfaceVariant,
-                    fontSize: 12,
+                    fontSize: 11,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

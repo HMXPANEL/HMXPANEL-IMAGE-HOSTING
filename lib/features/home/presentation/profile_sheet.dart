@@ -136,32 +136,35 @@ class _StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = context.colorScheme;
+    final isSmall = context.isSmall;
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: isSmall ? 40 : 48,
+          height: isSmall ? 40 : 48,
           decoration: BoxDecoration(
             gradient: aurora.primaryAurora,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(isSmall ? 12 : 14),
           ),
           child: Center(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: isSmall ? 15 : 18,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
             color: cs.onSurfaceVariant,
-            fontSize: 12,
+            fontSize: isSmall ? 11 : 12,
             fontWeight: FontWeight.w500,
           ),
         ),

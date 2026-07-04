@@ -31,4 +31,17 @@ class Upload {
       expiration: expiration,
     );
   }
+
+  Upload copyWithNewExpiration(DateTime? newExpiration) {
+    return Upload(
+      id: id,
+      url: url,
+      displayUrl: displayUrl,
+      deleteUrl: deleteUrl,
+      fileName: fileName,
+      size: size,
+      timestamp: timestamp,
+      expiration: newExpiration,
+    );
+  }
 }

@@ -21,85 +21,90 @@ class ImageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = context.colorScheme;
     final g = context.glass;
+    final isSmall = context.isSmall;
 
-    return GlassCard(
+    return RepaintBoundary(
+      child: GlassCard(
       padding: EdgeInsets.zero,
       gradient: g.glassSurface,
       onTap: onTap,
       animateOnAppear: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             child: AspectRatio(
-              aspectRatio: 1,
-              child: CachedNetworkImage(
-                imageUrl: upload.displayUrl ?? upload.url,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
-                  color: cs.surfaceContainerHighest,
-                  child: Center(
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: cs.primary,
+              aspectRatio: 1.18,
+              child: Hero(
+                tag: 'image_${upload.id}',
+                child: CachedNetworkImage(
+                  imageUrl: upload.displayUrl ?? upload.url,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    color: cs.surfaceContainerHighest,
+                    child: Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: cs.primary,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                errorWidget: (_, __, ___) => Container(
-                  color: cs.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.broken_image_outlined,
-                    color: cs.onSurfaceVariant,
+                  errorWidget: (_, __, ___) => Container(
+                    color: cs.surfaceContainerHighest,
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: cs.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(isSmall ? 8 : 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   upload.fileName,
                   style: context.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontSize: isSmall ? 11 : 12,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Row(
                   children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(Icons.schedule_rounded, size: 12, color: cs.onSurfaceVariant),
-                          const SizedBox(width: 4),
-                          Text(
-                            Formatters.timeAgo(upload.timestamp),
-                            style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
-                          ),
-                        ],
+                    Icon(Icons.schedule_rounded, size: 10, color: cs.onSurfaceVariant),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        Formatters.timeAgo(upload.timestamp),
+                        style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const Spacer(),
                     GestureDetector(
                       onTap: onDownload,
                       child: Container(
-                        padding: const EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: cs.primary.withAlpha(15),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: Icon(
                           Icons.download_rounded,
-                          size: 14,
+                          size: 12,
                           color: cs.primary,
                         ),
                       ),
@@ -107,30 +112,33 @@ class ImageCard extends StatelessWidget {
                   ],
                 ),
                 if (upload.expiration != null) ...[
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: upload.expiration!.isExpired
                           ? cs.error.withAlpha(15)
                           : Colors.amber.withAlpha(15),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.timer_outlined,
-                          size: 10,
+                          size: 9,
                           color: upload.expiration!.isExpired ? cs.error : Colors.amber,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          upload.expiration!.isExpired ? 'Expired' : Formatters.countdown(upload.expiration!),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: upload.expiration!.isExpired ? cs.error : Colors.amber.shade700,
+                        const SizedBox(width: 3),
+                        Flexible(
+                          child: Text(
+                            upload.expiration!.isExpired ? 'Expired' : Formatters.countdown(upload.expiration!),
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              color: upload.expiration!.isExpired ? cs.error : Colors.amber.shade700,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -142,6 +150,7 @@ class ImageCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 }

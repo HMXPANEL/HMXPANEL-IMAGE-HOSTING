@@ -45,133 +45,88 @@ class _AuroraBackgroundState extends State<AuroraBackground>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final a = context.aurora;
 
     return Stack(
       children: [
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (_, child) {
-            return Stack(
-              children: [
-                _AuroraOrb(
-                  color: context.aurora.electricBlue.withAlpha(80),
-                  offset: Offset(
-                    math.sin(_controller.value * math.pi * 2) * 0.3 + 0.5,
-                    math.cos(_controller.value * math.pi * 2 * 0.7) * 0.3 + 0.5,
+        SizedBox.expand(
+          child: RepaintBoundary(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (_, __) {
+                final v = _controller.value;
+                return CustomPaint(
+                  painter: _AuroraScenePainter(
+                    v: v,
+                    blue: a.electricBlue,
+                    purple: a.electricPurple,
+                    pink: a.electricPink,
+                    cyan: a.electricCyan,
+                    blur: widget.blur,
                   ),
-                  size: 300,
-                  blur: widget.blur,
-                ),
-                _AuroraOrb(
-                  color: context.aurora.electricPurple.withAlpha(60),
-                  offset: Offset(
-                    math.cos(_controller.value * math.pi * 2 * 0.5) * 0.4 + 0.5,
-                    math.sin(_controller.value * math.pi * 2 * 0.8) * 0.4 + 0.5,
-                  ),
-                  size: 250,
-                  blur: widget.blur,
-                ),
-                _AuroraOrb(
-                  color: context.aurora.electricPink.withAlpha(50),
-                  offset: Offset(
-                    math.sin(_controller.value * math.pi * 2 * 0.3 + 1) * 0.35 + 0.5,
-                    math.cos(_controller.value * math.pi * 2 * 0.6 + 1) * 0.35 + 0.5,
-                  ),
-                  size: 200,
-                  blur: widget.blur,
-                ),
-                _AuroraOrb(
-                  color: context.aurora.electricCyan.withAlpha(50),
-                  offset: Offset(
-                    math.cos(_controller.value * math.pi * 2 * 0.9 + 2) * 0.25 + 0.5,
-                    math.sin(_controller.value * math.pi * 2 * 0.4 + 2) * 0.25 + 0.5,
-                  ),
-                  size: 280,
-                  blur: widget.blur,
-                ),
-              ],
-            );
-          },
+                  size: Size.infinite,
+                );
+              },
+            ),
+          ),
         ),
         Positioned.fill(
           child: Container(
             color: cs.surface.withAlpha((255 * widget.opacity).round()),
           ),
         ),
-        widget.child,
+        RepaintBoundary(child: widget.child),
       ],
     );
   }
 }
 
-class _AuroraOrb extends StatelessWidget {
-  final Color color;
-  final Offset offset;
-  final double size;
+class _AuroraScenePainter extends CustomPainter {
+  final double v;
+  final Color blue;
+  final Color purple;
+  final Color pink;
+  final Color cyan;
   final double blur;
 
-  const _AuroraOrb({
-    required this.color,
-    required this.offset,
-    required this.size,
+  _AuroraScenePainter({
+    required this.v,
+    required this.blue,
+    required this.purple,
+    required this.pink,
+    required this.cyan,
     required this.blur,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: CustomPaint(
-        painter: _OrbPainter(
-          color: color,
-          offset: offset,
-          size: size,
-          blur: blur,
-        ),
-      ),
-    );
+  void paint(Canvas canvas, Size size) {
+    _paintOrb(canvas, size, blue.withAlpha(80), v, 0.0, 0.7, 300);
+    _paintOrb(canvas, size, purple.withAlpha(60), v, 0.5, 0.8, 250);
+    _paintOrb(canvas, size, pink.withAlpha(50), v, 0.3, 0.6, 200);
+    _paintOrb(canvas, size, cyan.withAlpha(50), v, 0.9, 0.4, 280);
   }
-}
 
-class _OrbPainter extends CustomPainter {
-  final Color color;
-  final Offset offset;
-  final double size;
-  final double blur;
-
-  _OrbPainter({
-    required this.color,
-    required this.offset,
-    required this.size,
-    required this.blur,
-  });
-
-  @override
-  void paint(Canvas canvas, Size canvasSize) {
+  void _paintOrb(Canvas canvas, Size canvasSize, Color color, double v,
+      double phase1, double phase2, double orbSize) {
     final center = Offset(
-      canvasSize.width * offset.dx,
-      canvasSize.height * offset.dy,
+      canvasSize.width * (math.sin(v * math.pi * 2 * phase1) * 0.3 + 0.5),
+      canvasSize.height * (math.cos(v * math.pi * 2 * phase2) * 0.3 + 0.5),
     );
-
-    final colors = [
-      color.withAlpha(180),
-      color.withAlpha(100),
-      color.withAlpha(30),
-      color.withAlpha(0),
-    ];
-
-    final stops = [0.0, 0.3, 0.6, 1.0];
 
     final paint = Paint()
       ..shader = RadialGradient(
-        colors: colors,
-        stops: stops,
-      ).createShader(Rect.fromCircle(center: center, radius: size));
+        colors: [
+          color.withAlpha(200),
+          color.withAlpha(120),
+          color.withAlpha(40),
+          color.withAlpha(0),
+        ],
+        stops: [0.0, 0.3, 0.6, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: orbSize));
 
-    canvas.drawCircle(center, size, paint);
+    canvas.drawCircle(center, orbSize, paint);
   }
 
   @override
-  bool shouldRepaint(covariant _OrbPainter oldDelegate) {
-    return oldDelegate.offset != offset || oldDelegate.color != color;
-  }
+  bool shouldRepaint(_AuroraScenePainter old) => old.v != v;
 }

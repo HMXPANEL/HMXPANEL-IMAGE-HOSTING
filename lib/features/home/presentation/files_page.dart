@@ -67,58 +67,56 @@ class _FilesPageState extends ConsumerState<FilesPage> {
         slivers: [
           SliverAppBar(
             expandedHeight: ResponsiveUtils.isSmall(context) ? 240 : 260,
+            collapsedHeight: ResponsiveUtils.isSmall(context) ? 100 : 110,
             pinned: true,
             stretch: true,
             backgroundColor: Colors.transparent,
             foregroundColor: cs.onSurface,
             flexibleSpace: FlexibleSpaceBar(
-              background: LayoutBuilder(
-                builder: (_, constraints) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      ResponsiveUtils.padding(context).left,
-                      MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
-                      ResponsiveUtils.padding(context).right,
-                      16,
+              collapseMode: CollapseMode.parallax,
+              background: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveUtils.padding(context).left,
+                  MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
+                  ResponsiveUtils.padding(context).right,
+                  16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'File Manager',
+                      style: context.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'File Manager',
-                          style: context.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${filteredUploads.length} of ${state.uploads.length} items',
-                          style: TextStyle(
-                            color: cs.onSurfaceVariant,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildSearchBar(context, cs, g),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          height: 36,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _filters.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 8),
-                            itemBuilder: (_, i) => GlassChip(
-                              label: _filters[i],
-                              selected: _selectedFilter == i,
-                              onTap: () => setState(() => _selectedFilter = i),
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 4),
+                    Text(
+                      '${filteredUploads.length} of ${state.uploads.length} items',
+                      style: TextStyle(
+                        color: cs.onSurfaceVariant,
+                        fontSize: 14,
+                      ),
                     ),
-                  );
-                },
+                    const SizedBox(height: 16),
+                    _buildSearchBar(context, cs, g),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 36,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _filters.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) => GlassChip(
+                          label: _filters[i],
+                          selected: _selectedFilter == i,
+                          onTap: () => setState(() => _selectedFilter = i),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -163,7 +161,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                           childAspectRatio:
-                              ResponsiveUtils.isSmall(context) ? 0.75 : 0.8,
+                              ResponsiveUtils.isSmall(context) ? 0.82 : 0.87,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (_, index) {

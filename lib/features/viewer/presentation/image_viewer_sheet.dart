@@ -72,7 +72,9 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
                     maxHeight: MediaQuery.of(context).size.height * 0.35,
                     minHeight: 180,
                   ),
-                  child: CachedNetworkImage(
+                  child: Hero(
+                    tag: 'image_${upload.id}',
+                    child: CachedNetworkImage(
                     imageUrl: upload.displayUrl ?? upload.url,
                     fit: BoxFit.contain,
                     width: double.infinity,
@@ -90,7 +92,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _ViewerAction(icon: Icons.download_rounded, label: 'Save', onTap: () async {
+                Flexible(child: _ViewerAction(icon: Icons.download_rounded, label: 'Save', onTap: () async {
                   GlassSnackBar.show(context, 'Downloading...', icon: Icons.download_rounded);
                   try {
                     await saveImageToGallery(upload.url);
@@ -102,15 +104,15 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
                       GlassSnackBar.show(context, 'Download failed', icon: Icons.error_outline_rounded);
                     }
                   }
-                }),
-                _ViewerAction(icon: Icons.link_rounded, label: 'Copy', onTap: () {
+                })),
+                Flexible(child: _ViewerAction(icon: Icons.link_rounded, label: 'Copy', onTap: () {
                   Clipboard.setData(ClipboardData(text: upload.url));
                   GlassSnackBar.show(context, 'Link copied!', icon: Icons.check_circle_rounded);
-                }),
-                _ViewerAction(icon: Icons.share_rounded, label: 'Share', onTap: () {
+                })),
+                Flexible(child: _ViewerAction(icon: Icons.share_rounded, label: 'Share', onTap: () {
                   Share.share(upload.url);
-                }),
-                _ViewerAction(
+                })),
+                Flexible(child: _ViewerAction(
                   icon: Icons.delete_outline_rounded,
                   label: 'Delete',
                   isDestructive: true,
@@ -118,7 +120,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
                     Navigator.pop(context);
                     widget.onDelete?.call();
                   },
-                ),
+                )),
               ],
             ).animate().fadeIn(duration: 400.ms, delay: 200.ms).slideY(begin: 0.05, end: 0),
             const SizedBox(height: 16),
@@ -200,6 +202,8 @@ class _ViewerActionState extends State<_ViewerAction>
     final cs = context.colorScheme;
     final g = context.glass;
 
+    final isSmall = context.isSmall;
+
     return AnimatedBuilder(
       animation: _scale,
       builder: (_, child) => Transform.scale(scale: _scale.value, child: child),
@@ -211,24 +215,28 @@ class _ViewerActionState extends State<_ViewerAction>
         },
         onTapCancel: () => _controller.reverse(),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmall ? 10 : 16,
+            vertical: isSmall ? 8 : 12,
+          ),
           decoration: BoxDecoration(
             color: g.glassSurfaceVariant,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: g.glassBorder, width: 0.5),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 widget.icon,
-                size: 22,
+                size: isSmall ? 18 : 22,
                 color: widget.isDestructive ? cs.error : cs.onSurface,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 widget.label,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: isSmall ? 9 : 11,
                   fontWeight: FontWeight.w600,
                   color: widget.isDestructive ? cs.error : cs.onSurfaceVariant,
                 ),

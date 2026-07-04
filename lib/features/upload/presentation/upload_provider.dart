@@ -7,6 +7,7 @@ import '../domain/api_key_model.dart';
 import '../data/upload_repository.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/errors/exceptions.dart';
+import '../../../core/providers/settings_provider.dart';
 
 class UploadState {
   final bool isLoading;
@@ -61,14 +62,15 @@ class UploadState {
 
 final uploadProvider = StateNotifierProvider<UploadNotifier, UploadState>((ref) {
   final repository = ref.read(uploadRepositoryProvider);
-  return UploadNotifier(repository);
+  return UploadNotifier(repository, ref);
 });
 
 class UploadNotifier extends StateNotifier<UploadState> {
   final UploadRepository _repository;
+  final Ref _ref;
   final ImagePicker _picker = ImagePicker();
 
-  UploadNotifier(this._repository) : super(const UploadState()) {
+  UploadNotifier(this._repository, this._ref) : super(const UploadState()) {
     _watchUploads();
     _watchApiKeys();
   }
@@ -154,11 +156,21 @@ class UploadNotifier extends StateNotifier<UploadState> {
         },
       );
 
+      final autoDelete = ref.read(autoDeleteProvider);
+      final expirationDuration = autoDelete.expirationDuration;
+      Upload finalUpload = upload;
+      if (expirationDuration != null) {
+        finalUpload = upload.copyWithNewExpiration(
+          DateTime.now().add(expirationDuration),
+        );
+        await _repository.updateUploadExpiration(upload.id, finalUpload.expiration!);
+      }
+
       state = state.copyWith(
         isUploading: false,
         uploadProgress: 1.0,
         statusMessage: 'Upload complete!',
-        lastUpload: upload,
+        lastUpload: finalUpload,
         clearSelectedFile: true,
       );
     } on AppException catch (e) {

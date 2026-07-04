@@ -94,16 +94,11 @@ class GlassCard extends StatelessWidget {
     );
 
     if (onTap != null || onLongPress != null) {
-      card = Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
-          borderRadius: BorderRadius.circular(radius),
-          splashColor: context.glass.glassHighlight,
-          highlightColor: Colors.transparent,
-          child: card,
-        ),
+      card = _CardPressHandler(
+        borderRadius: radius,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: card,
       );
     }
 
@@ -117,6 +112,72 @@ class GlassCard extends StatelessWidget {
     }
 
     return card;
+  }
+}
+
+class _CardPressHandler extends StatefulWidget {
+  final double borderRadius;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final Widget child;
+
+  const _CardPressHandler({
+    required this.borderRadius,
+    this.onTap,
+    this.onLongPress,
+    required this.child,
+  });
+
+  @override
+  State<_CardPressHandler> createState() => _CardPressHandlerState();
+}
+
+class _CardPressHandlerState extends State<_CardPressHandler>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: 100.ms, vsync: this);
+    _scale = Tween<double>(begin: 1.0, end: 0.97).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _scale,
+      builder: (_, child) => Transform.scale(
+        scale: _scale.value,
+        child: child,
+      ),
+      child: Listener(
+        onPointerDown: (_) => _controller.forward(),
+        onPointerUp: (_) => _controller.reverse(),
+        onPointerCancel: (_) => _controller.reverse(),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          child: InkWell(
+            onTap: widget.onTap,
+            onLongPress: widget.onLongPress,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            splashColor: context.glass.glassHighlight,
+            highlightColor: Colors.transparent,
+            child: widget.child,
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -360,6 +421,7 @@ class GlassBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final g = context.glass;
     final bottomPad = MediaQuery.of(context).padding.bottom;
+    final isSmall = ResponsiveUtils.isSmall(context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPad > 0 ? bottomPad : 8),
@@ -367,10 +429,10 @@ class GlassBottomNav extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         child: Container(
           width: ResponsiveUtils.bottomNavWidth(context),
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 8,
+          margin: EdgeInsets.symmetric(horizontal: isSmall ? 8 : 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmall ? 4 : 8,
+            vertical: isSmall ? 6 : 8,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
@@ -399,11 +461,12 @@ class GlassBottomNav extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(100),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(items.length, (i) {
                 final item = items[i];
                 final selected = i == selectedIndex;
                 return Flexible(
+                  fit: FlexFit.loose,
                   child: _GlassNavItemWidget(
                     item: item,
                     selected: selected,
@@ -448,6 +511,7 @@ class _GlassNavItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final a = context.aurora;
+    final isSmall = ResponsiveUtils.isSmall(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -456,11 +520,12 @@ class _GlassNavItemWidget extends StatelessWidget {
           child: AnimatedContainer(
             duration: 300.ms,
             curve: Curves.easeOutCubic,
+            constraints: const BoxConstraints(minWidth: 0),
             padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUtils.isSmall(context)
-                  ? (selected ? 14 : 8)
+              horizontal: isSmall
+                  ? (selected ? 12 : 6)
                   : (selected ? 20 : 12),
-              vertical: 10,
+              vertical: isSmall ? 8 : 10,
             ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
@@ -473,17 +538,20 @@ class _GlassNavItemWidget extends StatelessWidget {
             children: [
               Icon(
                 selected ? item.selectedIcon : item.icon,
-                size: 20,
+                size: isSmall ? 18 : 20,
                 color: selected ? Colors.white : context.glass.glassBorderStrong,
               ),
               if (selected) ...[
-                const SizedBox(width: 6),
-                Text(
-                  item.label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    item.label,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isSmall ? 11 : 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -541,22 +609,26 @@ class GlassStatCard extends StatelessWidget {
               if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Text(
             value,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              letterSpacing: -1,
+              letterSpacing: -0.5,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label,
             style: TextStyle(
               color: cs.onSurfaceVariant,
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -962,7 +1034,7 @@ class GlassSnackBar {
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => Positioned(
-        bottom: 100,
+        bottom: kBottomNavigationBarHeight + 100,
         left: ResponsiveUtils.padding(context).left,
         right: ResponsiveUtils.padding(context).right,
         child: Material(

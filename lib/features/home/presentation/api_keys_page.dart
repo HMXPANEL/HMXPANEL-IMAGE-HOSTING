@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../upload/presentation/upload_provider.dart';
 import '../../upload/domain/api_key_model.dart';
 import '../../../core/widgets/glass_components.dart';
+import '../../../core/providers/settings_provider.dart';
 import '../../../core/utils/extensions.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../core/utils/formatters.dart';
@@ -27,15 +29,17 @@ class ApiKeysPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: ResponsiveUtils.isSmall(context) ? 160 : 180,
+            expandedHeight: ResponsiveUtils.isSmall(context) ? 140 : 160,
+            collapsedHeight: ResponsiveUtils.isSmall(context) ? 90 : 100,
             pinned: true,
             backgroundColor: Colors.transparent,
             foregroundColor: context.colorScheme.onSurface,
             flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.parallax,
               background: Padding(
                 padding: EdgeInsets.fromLTRB(
                   ResponsiveUtils.padding(context).left,
-                  MediaQuery.of(context).padding.top + 60,
+                  MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
                   ResponsiveUtils.padding(context).right,
                   0,
                 ),
@@ -315,7 +319,7 @@ class _AddApiKeySheetState extends State<_AddApiKeySheet> {
   }
 }
 
-class _ApiProviderCard extends StatefulWidget {
+class _ApiProviderCard extends ConsumerStatefulWidget {
   final ApiKey apiKey;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -330,10 +334,10 @@ class _ApiProviderCard extends StatefulWidget {
   });
 
   @override
-  State<_ApiProviderCard> createState() => _ApiProviderCardState();
+  ConsumerState<_ApiProviderCard> createState() => _ApiProviderCardState();
 }
 
-class _ApiProviderCardState extends State<_ApiProviderCard> {
+class _ApiProviderCardState extends ConsumerState<_ApiProviderCard> {
   bool _obscured = true;
 
   @override
@@ -342,21 +346,25 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
     final cs = context.colorScheme;
     final apiKey = widget.apiKey;
     final gradient = _serviceGradient(apiKey.service);
+    final hideKeys = ref.watch(hideApiKeysProvider);
+
+    final showMasked = hideKeys && _obscured;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: GlassCard(
         gradient: g.glassSurface,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     gradient: gradient,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
                         color: gradient.colors.first.withAlpha(60),
@@ -365,9 +373,13 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                       ),
                     ],
                   ),
-                  child: const Icon(Icons.key_rounded, color: Colors.white, size: 22),
+                  child: Icon(
+                    _serviceIcon(apiKey.service),
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,10 +388,11 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                         apiKey.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
-                          fontSize: 15,
+                          fontSize: 14,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1),
                       Text(
                         AppConstants.serviceLabels[apiKey.service] ?? apiKey.service,
                         style: TextStyle(
@@ -391,91 +404,119 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                     ],
                   ),
                 ),
-                GlassBadge(
-                  label: apiKey.active ? 'Active' : 'Inactive',
-                  color: apiKey.active
-                      ? const Color(0xFF10B981)
-                      : cs.onSurfaceVariant,
-                  icon: apiKey.active ? Icons.check_circle : null,
-                ),
-                if (apiKey.active)
-                  const SizedBox(width: 4),
-                Container(
-                  width: 24,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: apiKey.active ? const Color(0xFF10B981) : cs.surfaceContainerHighest,
+                const SizedBox(width: 4),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: apiKey.key));
+                    GlassSnackBar.show(context, 'API key copied!', icon: Icons.check_circle_rounded);
+                  },
+                  child: Container(
+                    width: 32, height: 32,
+                    decoration: BoxDecoration(
+                      color: cs.primary.withAlpha(15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(Icons.copy_rounded, size: 16, color: cs.primary),
                   ),
-                  child: GestureDetector(
-                    onTap: widget.onToggle,
-                    child: AnimatedAlign(
-                      duration: 200.ms,
-                      curve: Curves.easeOutCubic,
-                      alignment: apiKey.active ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        margin: const EdgeInsets.all(1),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
+                ),
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: widget.onToggle,
+                  child: AnimatedContainer(
+                    duration: 200.ms,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: apiKey.active
+                          ? const Color(0xFF10B981).withAlpha(20)
+                          : cs.surfaceContainerHighest,
+                      border: Border.all(
+                        color: apiKey.active
+                            ? const Color(0xFF10B981).withAlpha(60)
+                            : cs.outlineVariant,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          apiKey.active ? Icons.check_circle : Icons.circle_outlined,
+                          size: 10,
+                          color: apiKey.active ? const Color(0xFF10B981) : cs.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          apiKey.active ? 'Active' : 'Inactive',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: apiKey.active ? const Color(0xFF10B981) : cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: g.glassSurfaceVariant,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.lock_rounded, size: 14, color: cs.onSurfaceVariant),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _obscured ? Formatters.maskApiKey(widget.apiKey.key) : widget.apiKey.key,
-                      style: TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 13,
-                        color: cs.onSurfaceVariant,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => setState(() => _obscured = !_obscured),
-                    child: Icon(
-                      _obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                      size: 16, color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (widget.apiKey.description != null && widget.apiKey.description!.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.description_outlined, size: 14, color: cs.onSurfaceVariant),
+                  Icon(Icons.lock_rounded, size: 13, color: cs.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      widget.apiKey.description!,
-                      style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+                      showMasked ? Formatters.maskApiKey(apiKey.key) : apiKey.key,
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: cs.onSurfaceVariant,
+                        letterSpacing: 0.5,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  if (hideKeys)
+                    GestureDetector(
+                      onTap: () => setState(() => _obscured = !_obscured),
+                      child: Icon(
+                        _obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        size: 15, color: cs.onSurfaceVariant,
+                      ),
+                    ),
                 ],
               ),
-            ],
-            const SizedBox(height: 12),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(Icons.calendar_today_rounded, size: 12, color: cs.onSurfaceVariant),
+                const SizedBox(width: 4),
+                Text(
+                  'Created ${Formatters.dateTime(apiKey.createdAt)}',
+                  style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+                ),
+                const Spacer(),
+                if (apiKey.description != null && apiKey.description!.isNotEmpty)
+                  Flexible(
+                    child: Text(
+                      apiKey.description!,
+                      style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
@@ -484,7 +525,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                     icon: Icons.edit_outlined,
                     onPressed: widget.onEdit,
                     expanded: true,
-                    fontSize: 13,
+                    fontSize: 12,
                     gradient: LinearGradient(
                       colors: [g.glassSurfaceVariant, g.glassSurfaceVariant],
                     ),
@@ -499,7 +540,7 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
                     icon: Icons.delete_outline,
                     onPressed: widget.onDelete,
                     expanded: true,
-                    fontSize: 13,
+                    fontSize: 12,
                     gradient: LinearGradient(
                       colors: [cs.error.withAlpha(30), cs.error.withAlpha(10)],
                     ),
@@ -513,6 +554,17 @@ class _ApiProviderCardState extends State<_ApiProviderCard> {
         ),
       ),
     );
+  }
+
+  IconData _serviceIcon(String service) {
+    switch (service) {
+      case 'imgbb': return Icons.image_rounded;
+      case 'imgkit': return Icons.photo_library_rounded;
+      case 'cloudinary': return Icons.cloud_rounded;
+      case 'imgur': return Icons.photo_camera_rounded;
+      case 'postimage': return Icons.drive_file_rename_outline_rounded;
+      default: return Icons.key_rounded;
+    }
   }
 
   LinearGradient _serviceGradient(String service) {
@@ -553,36 +605,41 @@ class _GlassConfirmDialog extends StatelessWidget {
     final g = context.glass;
     final cs = context.colorScheme;
 
+    final isSmall = ResponsiveUtils.isSmall(context);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: GlassCard(
         gradient: g.glassSurface,
+        padding: EdgeInsets.all(isSmall ? 20 : 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: isSmall ? 48 : 56,
+              height: isSmall ? 48 : 56,
               decoration: BoxDecoration(
                 color: cs.error.withAlpha(20),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.warning_amber_rounded, color: cs.error, size: 28),
+              child: Icon(Icons.warning_amber_rounded, color: cs.error, size: isSmall ? 24 : 28),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Text(
               title,
               style: context.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
+                fontSize: isSmall ? 18 : 20,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: cs.onSurfaceVariant, fontSize: 14),
+              style: TextStyle(color: cs.onSurfaceVariant, fontSize: isSmall ? 13 : 14),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -590,7 +647,7 @@ class _GlassConfirmDialog extends StatelessWidget {
                     label: 'Cancel',
                     onPressed: () => Navigator.pop(context),
                     expanded: true,
-                    fontSize: 14,
+                    fontSize: isSmall ? 13 : 14,
                     gradient: LinearGradient(
                       colors: [g.glassSurfaceVariant, g.glassSurfaceVariant],
                     ),
@@ -598,13 +655,13 @@ class _GlassConfirmDialog extends StatelessWidget {
                     borderColor: g.glassBorder,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: GlassButton(
                     label: confirmLabel,
                     onPressed: onConfirm,
                     expanded: true,
-                    fontSize: 14,
+                    fontSize: isSmall ? 13 : 14,
                     gradient: LinearGradient(
                       colors: [cs.error, cs.error.withAlpha(200)],
                     ),
