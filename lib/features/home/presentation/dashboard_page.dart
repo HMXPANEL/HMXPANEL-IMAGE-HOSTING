@@ -113,7 +113,7 @@ class DashboardPage extends ConsumerWidget {
           BoxShadow(
             color: a.electricBlue.withAlpha(50),
             blurRadius: size * 0.3,
-            offset: const Offset(0, size * 0.1),
+            offset: Offset(0, size * 0.1),
           ),
         ],
       ),
