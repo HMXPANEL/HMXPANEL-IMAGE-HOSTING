@@ -156,7 +156,7 @@ class UploadNotifier extends StateNotifier<UploadState> {
         },
       );
 
-      final autoDelete = ref.read(autoDeleteProvider);
+      final autoDelete = _ref.read(autoDeleteProvider);
       final expirationDuration = autoDelete.expirationDuration;
       Upload finalUpload = upload;
       if (expirationDuration != null) {

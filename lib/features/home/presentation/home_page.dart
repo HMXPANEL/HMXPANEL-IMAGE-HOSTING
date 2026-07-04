@@ -10,6 +10,7 @@ import 'search_delegate.dart';
 import '../../upload/presentation/upload_sheet.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/extensions.dart';
+import '../../../core/utils/responsive.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/tab_index_provider.dart';
 
@@ -135,7 +136,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           bottom: kBottomNavigationBarHeight + 16,
         ),
         child: GlassFAB(

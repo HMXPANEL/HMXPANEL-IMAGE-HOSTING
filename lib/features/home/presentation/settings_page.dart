@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../auth/presentation/auth_provider.dart';
@@ -500,7 +501,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 child: TextField(
                                   controller: customCtrl,
                                   keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'Hours',
                                     filled: true,
                                     isDense: true,
@@ -519,7 +520,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                         : '',
                                   ),
                                   keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'Days',
                                     filled: true,
                                     isDense: true,
@@ -541,7 +542,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                         : '',
                                   ),
                                   keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'Weeks',
                                     filled: true,
                                     isDense: true,

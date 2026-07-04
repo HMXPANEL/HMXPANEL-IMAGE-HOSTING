@@ -87,7 +87,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
                   ),
                 ),
               ),
-            ).animate().fadeIn(duration: 400.ms).scaleXY(begin: 0.95, end: 1.0),
+            )).animate().fadeIn(duration: 400.ms).scaleXY(begin: 0.95, end: 1.0),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,7 +41,10 @@ class AutoDeleteSetting {
       case AutoDeleteDuration.oneDay: return const Duration(days: 1);
       case AutoDeleteDuration.sevenDays: return const Duration(days: 7);
       case AutoDeleteDuration.thirtyDays: return const Duration(days: 30);
-      case AutoDeleteDuration.custom: return customHours != null ? Duration(hours: customHours) : null;
+      case AutoDeleteDuration.custom: {
+        final h = customHours;
+        return h != null ? Duration(hours: h) : null;
+      }
     }
   }
 }
@@ -61,9 +63,10 @@ class AutoDeleteNotifier extends StateNotifier<AutoDeleteSetting> {
     final enabled = prefs.getBool('auto_delete_enabled') ?? false;
     final durationIndex = prefs.getInt('auto_delete_duration') ?? 0;
     final customHours = prefs.getInt('auto_delete_custom_hours');
+    final index = durationIndex.clamp(0, AutoDeleteDuration.values.length - 1);
     state = AutoDeleteSetting(
       enabled: enabled,
-      duration: AutoDeleteDuration.values[durationIndex.clamp(0, AutoDeleteDuration.values.length - 1)],
+      duration: AutoDeleteDuration.values[index],
       customHours: customHours,
     );
   }
