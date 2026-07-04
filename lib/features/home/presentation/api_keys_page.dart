@@ -18,6 +18,7 @@ class ApiKeysPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(uploadProvider);
     final a = context.aurora;
+    final rv = context.rv;
 
     return Scaffold(
       extendBody: true,
@@ -29,8 +30,8 @@ class ApiKeysPage extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: ResponsiveUtils.isSmall(context) ? 140 : 160,
-            collapsedHeight: ResponsiveUtils.isSmall(context) ? 90 : 100,
+            expandedHeight: context.isSmall ? 140 : 160,
+            collapsedHeight: context.isSmall ? 90 : 100,
             pinned: true,
             backgroundColor: Colors.transparent,
             foregroundColor: context.colorScheme.onSurface,
@@ -38,9 +39,9 @@ class ApiKeysPage extends ConsumerWidget {
               collapseMode: CollapseMode.parallax,
               background: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  ResponsiveUtils.padding(context).left,
-                  MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
-                  ResponsiveUtils.padding(context).right,
+                  rv.horizontalEdge.left,
+                  MediaQuery.of(context).padding.top + (context.isSmall ? 40 : 60),
+                  rv.horizontalEdge.right,
                   0,
                 ),
                 child: Column(
@@ -68,10 +69,10 @@ class ApiKeysPage extends ConsumerWidget {
           ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
-              ResponsiveUtils.padding(context).left,
-              16,
-              ResponsiveUtils.padding(context).right,
-              ResponsiveUtils.bottomNavHeight(context),
+              rv.horizontalEdge.left,
+              AppSpacing.md,
+              rv.horizontalEdge.right,
+              rv.bottomNavHeight,
             ),
             sliver: state.apiKeys.isEmpty
                 ? SliverFillRemaining(
@@ -215,7 +216,7 @@ class _AddApiKeySheetState extends State<_AddApiKeySheet> {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 24),
+        padding: EdgeInsets.all(context.rv.cardPaddingVal),
         child: Form(
           key: _formKey,
           child: Column(
@@ -611,7 +612,7 @@ class _GlassConfirmDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: GlassCard(
         gradient: g.glassSurface,
-        padding: EdgeInsets.all(isSmall ? 20 : 24),
+        padding: EdgeInsets.all(context.rv.cardPaddingVal),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

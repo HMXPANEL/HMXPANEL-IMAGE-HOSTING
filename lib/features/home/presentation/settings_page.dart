@@ -98,6 +98,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final g = context.glass;
     final a = context.aurora;
     final user = auth.user;
+    final rv = context.rv;
     final autoDelete = ref.watch(autoDeleteProvider);
 
     return Scaffold(
@@ -106,8 +107,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: ResponsiveUtils.isSmall(context) ? 340 : 380,
-            collapsedHeight: ResponsiveUtils.isSmall(context) ? 100 : 110,
+            expandedHeight: context.isSmall ? 340 : 380,
+            collapsedHeight: context.isSmall ? 100 : 110,
             pinned: true,
             backgroundColor: Colors.transparent,
             foregroundColor: cs.onSurface,
@@ -115,10 +116,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               collapseMode: CollapseMode.parallax,
               background: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  ResponsiveUtils.padding(context).left,
-                  MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
-                  ResponsiveUtils.padding(context).right,
-                  16,
+                  rv.horizontalEdge.left,
+                  MediaQuery.of(context).padding.top + (context.isSmall ? 40 : 60),
+                  rv.horizontalEdge.right,
+                  AppSpacing.md,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -133,10 +134,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
-              ResponsiveUtils.padding(context).left,
-              16,
-              ResponsiveUtils.padding(context).right,
-              ResponsiveUtils.bottomNavHeight(context),
+              rv.horizontalEdge.left,
+              AppSpacing.md,
+              rv.horizontalEdge.right,
+              rv.bottomNavHeight,
             ),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
@@ -172,7 +173,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       BuildContext context, ColorScheme cs, GlassThemeExtension g, AuroraThemeExtension a, user) {
     return GlassCard(
       gradient: g.glassSurface,
-      padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 16 : 24),
+      padding: rv.cardPadding,
       child: Row(
         children: [
           Container(
@@ -420,7 +421,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final a = this.context.aurora;
     AutoDeleteDuration selectedDuration = AutoDeleteDuration.oneDay;
     int customHours = 24;
-    final customCtrl = TextEditingController(text: '24');
+    final hoursCtrl = TextEditingController(text: '24');
+    final daysCtrl = TextEditingController();
+    final weeksCtrl = TextEditingController();
 
     showModalBottomSheet(
       context: context,
@@ -434,20 +437,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
           child: GlassCard(
             margin: EdgeInsets.zero,
-            padding: EdgeInsets.all(ResponsiveUtils.isSmall(ctx) ? 20 : 28),
+            padding: EdgeInsets.all(context.rv.cardPaddingVal),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 40, height: 4,
-                    decoration: BoxDecoration(
-                      color: cs.outlineVariant,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
+                const SheetHandle(),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -465,14 +460,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Auto Delete',
+                            'Auto Delete Images',
                             style: context.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'When should uploaded images be deleted?',
+                            'Choose when newly uploaded images should automatically expire.',
                             style: TextStyle(
                               color: cs.onSurfaceVariant,
                               fontSize: 13,
@@ -499,7 +494,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             children: [
                               Expanded(
                                 child: TextField(
-                                  controller: customCtrl,
+                                  controller: hoursCtrl,
                                   keyboardType: TextInputType.number,
                                   decoration: const InputDecoration(
                                     labelText: 'Hours',
@@ -507,18 +502,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     isDense: true,
                                   ),
                                   onChanged: (v) {
-                                    customHours = int.tryParse(v) ?? 1;
+                                    final h = int.tryParse(v) ?? 0;
+                                    customHours = h > 0 ? h : 1;
                                   },
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: TextField(
-                                  controller: TextEditingController(
-                                    text: customHours >= 24
-                                        ? '${customHours ~/ 24}'
-                                        : '',
-                                  ),
+                                  controller: daysCtrl,
                                   keyboardType: TextInputType.number,
                                   decoration: const InputDecoration(
                                     labelText: 'Days',
@@ -526,21 +518,19 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     isDense: true,
                                   ),
                                   onChanged: (v) {
-                                    final days = int.tryParse(v) ?? 0;
-                                    if (days > 0) {
-                                      customCtrl.text = '${days * 24}';
-                                      customHours = days * 24;
+                                    final d = int.tryParse(v) ?? 0;
+                                    if (d > 0) {
+                                      final h = d * 24;
+                                      hoursCtrl.text = '$h';
+                                      customHours = h;
                                     }
                                   },
                                 ),
                               ),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: TextField(
-                                  controller: TextEditingController(
-                                    text: customHours >= 168
-                                        ? '${customHours ~/ 168}'
-                                        : '',
-                                  ),
+                                  controller: weeksCtrl,
                                   keyboardType: TextInputType.number,
                                   decoration: const InputDecoration(
                                     labelText: 'Weeks',
@@ -548,10 +538,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     isDense: true,
                                   ),
                                   onChanged: (v) {
-                                    final weeks = int.tryParse(v) ?? 0;
-                                    if (weeks > 0) {
-                                      customCtrl.text = '${weeks * 168}';
-                                      customHours = weeks * 168;
+                                    final w = int.tryParse(v) ?? 0;
+                                    if (w > 0) {
+                                      final h = w * 168;
+                                      hoursCtrl.text = '$h';
+                                      customHours = h;
                                     }
                                   },
                                 ),
@@ -572,7 +563,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    'Only future uploads will follow this rule.',
+                                    'This only affects future uploads.',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.amber.shade700,
@@ -612,7 +603,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         label: 'Save',
                         onPressed: () {
                           final hours = selectedDuration == AutoDeleteDuration.custom
-                              ? (int.tryParse(customCtrl.text) ?? 24).clamp(1, 8760)
+                              ? (int.tryParse(hoursCtrl.text) ?? 24).clamp(1, 8760)
                               : null;
                           ref.read(autoDeleteProvider.notifier).save(
                             AutoDeleteSetting(
@@ -636,7 +627,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           ),
         ),
       ),
-    );
+    ).whenComplete(() {
+      hoursCtrl.dispose();
+      daysCtrl.dispose();
+      weeksCtrl.dispose();
+    });
   }
 
   String _durationLabel(AutoDeleteDuration d) {

@@ -25,6 +25,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final cs = context.colorScheme;
+    final rv = context.rv;
     final tabIndex = ref.watch(tabIndexProvider);
 
     return Scaffold(
@@ -32,7 +33,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       extendBodyBehindAppBar: true,
       appBar: tabIndex == 0
           ? AppBar(
-              toolbarHeight: ResponsiveUtils.isSmall(context) ? 64 : 72,
+              toolbarHeight: context.isSmall ? 64 : 72,
               leading: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: IconButton(

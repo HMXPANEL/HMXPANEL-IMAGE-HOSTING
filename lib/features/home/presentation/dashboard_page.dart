@@ -20,27 +20,28 @@ class DashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(uploadProvider);
     final cs = context.colorScheme;
+    final rv = context.rv;
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
-        ResponsiveUtils.padding(context).left,
-        MediaQuery.of(context).padding.top + kToolbarHeight + 8,
-        ResponsiveUtils.padding(context).right,
-        ResponsiveUtils.bottomNavHeight(context),
+        rv.horizontalEdge.left,
+        MediaQuery.of(context).padding.top + kToolbarHeight + AppSpacing.sm,
+        rv.horizontalEdge.right,
+        rv.bottomNavHeight,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildWelcomeSection(context, cs, state, ref),
-          SizedBox(height: ResponsiveUtils.isSmall(context) ? 20 : 28),
+          SizedBox(height: context.isSmall ? AppSpacing.lg - 4 : AppSpacing.xl - 4),
           _buildStatsRow(context, state),
-          SizedBox(height: ResponsiveUtils.isSmall(context) ? 20 : 28),
+          SizedBox(height: context.isSmall ? AppSpacing.lg - 4 : AppSpacing.xl - 4),
           _buildQuickUpload(context, ref),
-          SizedBox(height: ResponsiveUtils.isSmall(context) ? 24 : 32),
+          SizedBox(height: context.isSmall ? AppSpacing.xl - 8 : AppSpacing.lg + AppSpacing.sm),
           _buildRecentActivitySection(context, cs, state, ref),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl - 8),
           _buildStorageSection(context, state),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.lg + AppSpacing.sm),
         ],
       ),
     );
@@ -59,7 +60,7 @@ class DashboardPage extends ConsumerWidget {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
-      padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 28),
+      padding: EdgeInsets.all(context.isSmall ? AppSpacing.lg - 4 : AppSpacing.xl - 4),
       child: Row(
         children: [
           Expanded(

@@ -42,6 +42,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
   Widget build(BuildContext context) {
     final cs = context.colorScheme;
     final g = context.glass;
+    final rv = context.rv;
     final upload = widget.upload;
 
     return Padding(
@@ -50,7 +51,7 @@ class _ImageViewerSheetState extends State<ImageViewerSheet> {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 16 : 24),
+        padding: rv.cardPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

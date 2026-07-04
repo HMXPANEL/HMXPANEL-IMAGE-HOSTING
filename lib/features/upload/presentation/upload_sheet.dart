@@ -34,6 +34,7 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
     final state = ref.watch(uploadProvider);
     final cs = context.colorScheme;
     final g = context.glass;
+    final rv = context.rv;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -41,7 +42,7 @@ class _UploadSheetState extends ConsumerState<UploadSheet> {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 28),
+        padding: rv.cardPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

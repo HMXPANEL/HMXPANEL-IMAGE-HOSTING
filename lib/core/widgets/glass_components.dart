@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/premium_extensions.dart';
 import '../utils/responsive.dart';
+import '../utils/extensions.dart';
 
 extension ThemeContext on BuildContext {
   GlassThemeExtension get glass => Theme.of(this).extension<GlassThemeExtension>()!;
@@ -40,7 +41,8 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final g = context.glass;
-    final radius = borderRadius ?? 20;
+    final rv = context.rv;
+    final radius = borderRadius ?? AppRadius.card;
 
     Widget card = Container(
       margin: margin ?? EdgeInsets.zero,
@@ -85,7 +87,7 @@ class GlassCard extends StatelessWidget {
                 ),
               ),
             Padding(
-              padding: padding ?? EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 16 : 20),
+              padding: padding ?? rv.cardPadding,
               child: child,
             ),
           ],
@@ -243,7 +245,8 @@ class _GlassButtonState extends State<GlassButton> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final g = context.glass;
     final a = context.aurora;
-    final radius = widget.borderRadius ?? 16;
+    final rv = context.rv;
+    final radius = widget.borderRadius ?? AppRadius.button;
 
     Widget button = AnimatedBuilder(
       animation: _scale,
@@ -260,8 +263,8 @@ class _GlassButtonState extends State<GlassButton> with SingleTickerProviderStat
           width: widget.expanded ? double.infinity : null,
           padding: widget.padding ??
               EdgeInsets.symmetric(
-                horizontal: ResponsiveUtils.isSmall(context) ? 20 : 24,
-                vertical: ResponsiveUtils.isSmall(context) ? 14 : 16,
+                horizontal: ResponsiveUtils.isSmall(context) ? AppSpacing.lg - 4 : AppSpacing.xl - 8,
+                vertical: ResponsiveUtils.isSmall(context) ? AppSpacing.lg - 10 : AppSpacing.md,
               ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
@@ -435,7 +438,7 @@ class GlassBottomNav extends StatelessWidget {
             vertical: isSmall ? 6 : 8,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(AppRadius.pill),
             gradient: LinearGradient(
               colors: [
                 g.glassSurface.withAlpha(240),
@@ -465,8 +468,7 @@ class GlassBottomNav extends StatelessWidget {
               children: List.generate(items.length, (i) {
                 final item = items[i];
                 final selected = i == selectedIndex;
-                return Flexible(
-                  fit: FlexFit.loose,
+                return Expanded(
                   child: _GlassNavItemWidget(
                     item: item,
                     selected: selected,
@@ -609,7 +611,7 @@ class GlassStatCard extends StatelessWidget {
               if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.sm + 2),
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -619,7 +621,7 @@ class GlassStatCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: AppSpacing.xxs),
           Text(
             label,
             style: TextStyle(
@@ -826,7 +828,7 @@ class GlassSection extends StatelessWidget {
               if (trailing != null) trailing!,
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           child,
         ],
       ),
@@ -990,7 +992,7 @@ class GlassEmptyState extends StatelessWidget {
               ),
               child: Icon(icon, size: 36, color: Colors.white),
             ).animate().fadeIn(duration: 400.ms).scaleXY(begin: 0.8, end: 1.0),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.lg - 4),
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -999,7 +1001,7 @@ class GlassEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ).animate().fadeIn(duration: 400.ms, delay: 100.ms),
             if (subtitle != null) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 subtitle!,
                 style: TextStyle(
@@ -1111,7 +1113,7 @@ class _GlassSnackBarWidgetState extends State<_GlassSnackBarWidget> with SingleT
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
             color: widget.gradient != null ? null : g.glassSurface,
             gradient: widget.gradient,
             border: Border.all(color: g.glassBorder, width: 0.5),
@@ -1127,7 +1129,7 @@ class _GlassSnackBarWidgetState extends State<_GlassSnackBarWidget> with SingleT
             children: [
               if (widget.icon != null) ...[
                 Icon(widget.icon, size: 20, color: cs.onSurface),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
               ],
               Expanded(
                 child: Text(
@@ -1140,7 +1142,7 @@ class _GlassSnackBarWidgetState extends State<_GlassSnackBarWidget> with SingleT
                 ),
               ),
               if (widget.actionLabel != null) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 GestureDetector(
                   onTap: () {
                     widget.onAction?.call();
@@ -1160,6 +1162,117 @@ class _GlassSnackBarWidgetState extends State<_GlassSnackBarWidget> with SingleT
           ),
         ),
       ),
+    );
+  }
+}
+
+class GlassBottomSheet {
+  static Future<T?> show<T>(BuildContext context, {
+    required Widget Function(BuildContext) builder,
+    bool isScrollControlled = true,
+    bool useSafeArea = true,
+  }) {
+    return showModalBottomSheet<T>(
+      context: context,
+      isScrollControlled: isScrollControlled,
+      useSafeArea: useSafeArea,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+        ),
+        child: GlassCard(
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.all(context.rv.cardPaddingVal),
+          child: builder(ctx),
+        ),
+      ),
+    );
+  }
+}
+
+class GlassDialog {
+  static Future<T?> show<T>(BuildContext context, {
+    required Widget Function(BuildContext) builder,
+  }) {
+    return showDialog<T>(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
+          padding: EdgeInsets.all(context.rv.cardPaddingVal),
+          child: builder(context),
+        ),
+      ),
+    );
+  }
+}
+
+class SheetHandle extends StatelessWidget {
+  const SheetHandle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 40,
+        height: 4,
+        decoration: BoxDecoration(
+          color: context.colorScheme.outlineVariant,
+          borderRadius: BorderRadius.circular(AppRadius.xxs),
+        ),
+      ),
+    );
+  }
+}
+
+class DialogIcon extends StatelessWidget {
+  final IconData icon;
+  final Gradient? gradient;
+  final Color? color;
+  final double size;
+
+  const DialogIcon({
+    super.key,
+    required this.icon,
+    this.gradient,
+    this.color,
+    this.size = 48,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        gradient: gradient,
+        color: color ?? context.colorScheme.error.withAlpha(20),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: gradient != null ? Colors.white : context.colorScheme.error, size: size * 0.5),
+    );
+  }
+}
+
+class DialogActions extends StatelessWidget {
+  final Widget Function(BuildContext) cancel;
+  final Widget Function(BuildContext) confirm;
+
+  const DialogActions({
+    super.key,
+    required this.cancel,
+    required this.confirm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: cancel(context)),
+        const SizedBox(width: AppSpacing.sm + 2),
+        Expanded(child: confirm(context)),
+      ],
     );
   }
 }

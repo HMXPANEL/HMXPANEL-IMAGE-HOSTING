@@ -57,13 +57,14 @@ class _LoginPageState extends ConsumerState<LoginPage>
     final state = ref.watch(authProvider);
     final cs = context.colorScheme;
     final a = context.aurora;
+    final rv = context.rv;
 
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveUtils.isSmall(context) ? 24 : 48,
+              horizontal: context.isSmall ? AppSpacing.xl - 8 : AppSpacing.xxl,
             ),
             child: AnimatedBuilder(
               animation: _shakeCtrl,

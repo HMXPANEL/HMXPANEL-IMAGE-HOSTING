@@ -14,7 +14,9 @@ extension BuildContextX on BuildContext {
   bool get isLarge => ResponsiveUtils.isLarge(this);
   bool get isTablet => ResponsiveUtils.isTablet(this);
   bool get isDesktop => ResponsiveUtils.isDesktop(this);
+  bool get isLandscape => ResponsiveUtils.isLandscape(this);
 
+  ResponsiveValues get rv => ResponsiveValues(this);
 }
 
 extension DateTimeX on DateTime {

@@ -26,6 +26,7 @@ class ProfileSheet extends ConsumerWidget {
     final auth = ref.watch(authProvider);
     final upload = ref.watch(uploadProvider);
     final a = context.aurora;
+    final rv = context.rv;
     final user = auth.user;
 
     return Padding(
@@ -34,7 +35,7 @@ class ProfileSheet extends ConsumerWidget {
       ),
       child: GlassCard(
         margin: EdgeInsets.zero,
-        padding: EdgeInsets.all(ResponsiveUtils.isSmall(context) ? 20 : 28),
+        padding: rv.cardPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

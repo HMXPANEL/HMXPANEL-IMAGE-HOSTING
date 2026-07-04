@@ -34,6 +34,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
     final state = ref.watch(uploadProvider);
     final cs = context.colorScheme;
     final g = context.glass;
+    final rv = context.rv;
 
     var filteredUploads = state.uploads;
     if (_searchQuery.isNotEmpty) {
@@ -66,8 +67,8 @@ class _FilesPageState extends ConsumerState<FilesPage> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: ResponsiveUtils.isSmall(context) ? 240 : 260,
-            collapsedHeight: ResponsiveUtils.isSmall(context) ? 100 : 110,
+            expandedHeight: context.isSmall ? 240 : 260,
+            collapsedHeight: context.isSmall ? 100 : 110,
             pinned: true,
             stretch: true,
             backgroundColor: Colors.transparent,
@@ -76,10 +77,10 @@ class _FilesPageState extends ConsumerState<FilesPage> {
               collapseMode: CollapseMode.parallax,
               background: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  ResponsiveUtils.padding(context).left,
-                  MediaQuery.of(context).padding.top + (ResponsiveUtils.isSmall(context) ? 40 : 60),
-                  ResponsiveUtils.padding(context).right,
-                  16,
+                  rv.horizontalEdge.left,
+                  MediaQuery.of(context).padding.top + (context.isSmall ? 40 : 60),
+                  rv.horizontalEdge.right,
+                  AppSpacing.md,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,10 +123,10 @@ class _FilesPageState extends ConsumerState<FilesPage> {
           ),
           SliverPadding(
             padding: EdgeInsets.fromLTRB(
-              ResponsiveUtils.padding(context).left,
-              16,
-              ResponsiveUtils.padding(context).right,
-              ResponsiveUtils.bottomNavHeight(context),
+              rv.horizontalEdge.left,
+              AppSpacing.md,
+              rv.horizontalEdge.right,
+              rv.bottomNavHeight,
             ),
             sliver: state.isLoading
                 ? const SliverFillRemaining(
@@ -156,12 +157,10 @@ class _FilesPageState extends ConsumerState<FilesPage> {
                     : SliverGrid(
                         gridDelegate:
                             SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount:
-                              ResponsiveUtils.gridColumnCount(context),
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio:
-                              ResponsiveUtils.isSmall(context) ? 0.82 : 0.87,
+                          crossAxisCount: rv.gridColumns,
+                          crossAxisSpacing: rv.gridSpacing,
+                          mainAxisSpacing: rv.gridSpacing,
+                          childAspectRatio: rv.imageCardAspectRatio,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (_, index) {
