@@ -26,6 +26,7 @@ class AppSpacing {
 
 class AppRadius {
   AppRadius._();
+  static const double xxs = 2;
   static const double xs = 4;
   static const double sm = 6;
   static const double md = 12;
@@ -186,10 +187,10 @@ class ResponsiveValues {
   double get spacingXl => AppSpacing.xl;
   double get spacingXxl => AppSpacing.xxl;
 
-  EdgeInsets get edgeXs => EdgeInsets.all(AppSpacing.xs);
-  EdgeInsets get edgeSm => EdgeInsets.all(AppSpacing.sm);
-  EdgeInsets get edgeMd => EdgeInsets.all(AppSpacing.md);
-  EdgeInsets get edgeLg => EdgeInsets.all(AppSpacing.lg);
+  EdgeInsets get edgeXs => const EdgeInsets.all(AppSpacing.xs);
+  EdgeInsets get edgeSm => const EdgeInsets.all(AppSpacing.sm);
+  EdgeInsets get edgeMd => const EdgeInsets.all(AppSpacing.md);
+  EdgeInsets get edgeLg => const EdgeInsets.all(AppSpacing.lg);
 
   EdgeInsets get horizontalEdge => padding;
 

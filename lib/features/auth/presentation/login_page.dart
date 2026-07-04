@@ -57,7 +57,6 @@ class _LoginPageState extends ConsumerState<LoginPage>
     final state = ref.watch(authProvider);
     final cs = context.colorScheme;
     final a = context.aurora;
-    final rv = context.rv;
 
     return Scaffold(
       body: SafeArea(

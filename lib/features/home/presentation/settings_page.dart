@@ -173,7 +173,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       BuildContext context, ColorScheme cs, GlassThemeExtension g, AuroraThemeExtension a, user) {
     return GlassCard(
       gradient: g.glassSurface,
-      padding: rv.cardPadding,
+      padding: context.rv.cardPadding,
       child: Row(
         children: [
           Container(
@@ -420,7 +420,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final cs = this.context.colorScheme;
     final a = this.context.aurora;
     AutoDeleteDuration selectedDuration = AutoDeleteDuration.oneDay;
-    int customHours = 24;
+    int customHours = 24; // ignore: unused_local_variable
     final hoursCtrl = TextEditingController(text: '24');
     final daysCtrl = TextEditingController();
     final weeksCtrl = TextEditingController();

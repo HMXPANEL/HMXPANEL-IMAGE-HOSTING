@@ -6,7 +6,6 @@ import 'package:share_plus/share_plus.dart' show Share;
 import '../../upload/domain/upload_model.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/extensions.dart';
-import '../../../core/utils/responsive.dart';
 import '../../../core/widgets/glass_components.dart';
 import '../../../core/utils/download_helper.dart';
 

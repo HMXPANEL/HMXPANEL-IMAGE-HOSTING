@@ -245,7 +245,6 @@ class _GlassButtonState extends State<GlassButton> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final g = context.glass;
     final a = context.aurora;
-    final rv = context.rv;
     final radius = widget.borderRadius ?? AppRadius.button;
 
     Widget button = AnimatedBuilder(
