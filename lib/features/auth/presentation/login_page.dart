@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -46,6 +47,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
       _emailController.text.trim(),
       _passwordController.text,
     );
+    if (!mounted) return;
     if (ref.read(authProvider).error != null) {
       _shakeCtrl.reset();
       _shakeCtrl.forward();
@@ -70,8 +72,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
               builder: (_, child) => Transform.translate(
                 offset: Offset(
                   _shakeCtrl.value > 0
-                      ? (DateTime.now().millisecondsSinceEpoch % 10 < 5 ? 8.0 : -8.0) *
-                          _shakeCtrl.value
+                      ? math.sin(_shakeCtrl.value * math.pi * 6) *
+                          8 * (1 - _shakeCtrl.value)
                       : 0,
                   0,
                 ),

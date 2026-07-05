@@ -420,7 +420,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final cs = this.context.colorScheme;
     final a = this.context.aurora;
     AutoDeleteDuration selectedDuration = AutoDeleteDuration.oneDay;
-    int customHours = 24; // ignore: unused_local_variable
     final hoursCtrl = TextEditingController(text: '24');
     final daysCtrl = TextEditingController();
     final weeksCtrl = TextEditingController();
@@ -501,10 +500,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                     filled: true,
                                     isDense: true,
                                   ),
-                                  onChanged: (v) {
-                                    final h = int.tryParse(v) ?? 0;
-                                    customHours = h > 0 ? h : 1;
-                                  },
+                                  onChanged: (_) {},
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -520,9 +516,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   onChanged: (v) {
                                     final d = int.tryParse(v) ?? 0;
                                     if (d > 0) {
-                                      final h = d * 24;
-                                      hoursCtrl.text = '$h';
-                                      customHours = h;
+                                      hoursCtrl.text = '${d * 24}';
                                     }
                                   },
                                 ),
@@ -540,9 +534,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                   onChanged: (v) {
                                     final w = int.tryParse(v) ?? 0;
                                     if (w > 0) {
-                                      final h = w * 168;
-                                      hoursCtrl.text = '$h';
-                                      customHours = h;
+                                      hoursCtrl.text = '${w * 168}';
                                     }
                                   },
                                 ),

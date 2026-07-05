@@ -14,7 +14,7 @@ class DioClient {
     );
     _dio.interceptors.addAll([
       _LoggingInterceptor(),
-      _RetryInterceptor(),
+      _RetryInterceptor(_dio),
     ]);
   }
 
@@ -100,12 +100,15 @@ class _LoggingInterceptor extends Interceptor {
 }
 
 class _RetryInterceptor extends Interceptor {
+  final Dio _dio;
+  _RetryInterceptor(this._dio);
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (_shouldRetry(err)) {
       try {
         await Future.delayed(const Duration(seconds: 1));
-        handler.resolve(await Dio().fetch(err.requestOptions));
+        handler.resolve(await _dio.fetch(err.requestOptions));
         return;
       } catch (_) {}
     }

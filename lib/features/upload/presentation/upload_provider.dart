@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,6 +71,8 @@ class UploadNotifier extends StateNotifier<UploadState> {
   final UploadRepository _repository;
   final Ref _ref;
   final ImagePicker _picker = ImagePicker();
+  StreamSubscription? _uploadsSub;
+  StreamSubscription? _apiKeysSub;
 
   // ponytail: defer Firestore listener setup so provider creation doesn't
   // block the first build/transition frame
@@ -80,14 +83,21 @@ class UploadNotifier extends StateNotifier<UploadState> {
     });
   }
 
+  @override
+  void dispose() {
+    _uploadsSub?.cancel();
+    _apiKeysSub?.cancel();
+    super.dispose();
+  }
+
   void _watchUploads() {
-    _repository.watchUploads().listen((uploads) {
+    _uploadsSub = _repository.watchUploads().listen((uploads) {
       state = state.copyWith(uploads: uploads);
     });
   }
 
   void _watchApiKeys() {
-    _repository.watchApiKeys().listen((keys) {
+    _apiKeysSub = _repository.watchApiKeys().listen((keys) {
       state = state.copyWith(apiKeys: keys);
     });
   }
@@ -190,7 +200,16 @@ class UploadNotifier extends StateNotifier<UploadState> {
         error: 'Upload failed',
         statusMessage: 'Upload failed',
       );
+    } finally {
+      _cleanupTempFile(compressed);
     }
+  }
+
+  void _cleanupTempFile(File? file) {
+    if (file == null) return;
+    try {
+      if (file.existsSync()) file.deleteSync();
+    } catch (_) {}
   }
 
   Future<void> deleteUpload(String id) async {

@@ -31,13 +31,16 @@ class UploadRepository {
   CollectionReference get _apiKeysRef =>
       _firestore.collection('users').doc(_userId).collection('apiKeys');
 
+  Map<String, dynamic>? _docData(DocumentSnapshot doc) =>
+      doc.data() as Map<String, dynamic>?;
+
   Stream<List<Upload>> watchUploads() {
     return _uploadsRef
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = _docData(doc) ?? <String, dynamic>{};
         return Upload(
           id: doc.id,
           url: data['url'] as String? ?? '',
@@ -58,7 +61,7 @@ class UploadRepository {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = _docData(doc) ?? <String, dynamic>{};
         return ApiKey(
           id: doc.id,
           service: data['service'] as String? ?? 'custom',
@@ -76,7 +79,7 @@ class UploadRepository {
     final snapshot = await _apiKeysRef.where('active', isEqualTo: true).limit(1).get();
     if (snapshot.docs.isEmpty) return null;
     final doc = snapshot.docs.first;
-    final data = doc.data() as Map<String, dynamic>;
+    final data = _docData(doc) ?? <String, dynamic>{};
     return ApiKey(
       id: doc.id,
       service: data['service'] as String? ?? 'custom',
@@ -121,9 +124,11 @@ class UploadRepository {
 
   Future<void> _deactivateAllKeys() async {
     final snapshot = await _apiKeysRef.get();
+    final batch = _firestore.batch();
     for (final doc in snapshot.docs) {
-      await doc.reference.update({'active': false});
+      batch.update(doc.reference, {'active': false});
     }
+    await batch.commit();
   }
 
   Future<Upload> uploadImage({
@@ -154,12 +159,16 @@ class UploadRepository {
         ),
       );
 
-      final body = response.data as Map<String, dynamic>;
-      if (body['success'] != true) {
-        throw UploadException(body['error']?['message'] ?? 'Upload failed');
+      final body = response.data;
+      if (body is! Map<String, dynamic> || body['success'] != true) {
+        throw UploadException(body is Map ? (body['error']?['message'] ?? 'Upload failed') : 'Upload failed');
       }
 
-      final data = body['data'] as Map<String, dynamic>;
+      final rawData = body['data'];
+      if (rawData is! Map<String, dynamic>) {
+        throw UploadException('Invalid response data');
+      }
+      final data = rawData;
       final upload = Upload(
         id: '',
         url: data['url'] as String? ?? '',
@@ -194,9 +203,11 @@ class UploadRepository {
 
   Future<void> clearAllUploads() async {
     final snapshot = await _uploadsRef.get();
+    final batch = _firestore.batch();
     for (final doc in snapshot.docs) {
-      await doc.reference.delete();
+      batch.delete(doc.reference);
     }
+    await batch.commit();
   }
 
   String _encodeBase64(List<int> bytes) {

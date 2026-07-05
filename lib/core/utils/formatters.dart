@@ -8,7 +8,7 @@ class Formatters {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     final i = (bytes.bitLength / 10).floor().clamp(0, sizes.length - 1);
-    final value = bytes / (k << (i * 10 ~/ 10));
+    final value = bytes / (1 << (i * 10));
     return '${value.toStringAsFixed(1)} ${sizes[i]}';
   }
 
