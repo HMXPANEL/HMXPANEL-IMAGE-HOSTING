@@ -5,7 +5,6 @@ class Formatters {
 
   static String bytes(int bytes) {
     if (bytes == 0) return '0 B';
-    const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     final i = (bytes.bitLength / 10).floor().clamp(0, sizes.length - 1);
     final value = bytes / (1 << (i * 10));
