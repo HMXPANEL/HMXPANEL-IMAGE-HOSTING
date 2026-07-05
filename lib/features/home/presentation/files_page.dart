@@ -65,6 +65,7 @@ class _FilesPageState extends ConsumerState<FilesPage> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
         slivers: [
           SliverAppBar(
             expandedHeight: context.isSmall ? 240 : 260,

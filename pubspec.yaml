@@ -1,5 +1,5 @@
 name: hmxcloud_app
-description: HmxCloud - Premium Free Image Hosting
+description: HMXcloud - Premium Free Image Hosting
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -33,6 +33,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.4
 
 flutter:
   uses-material-design: true
@@ -44,7 +45,16 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/logo.png"
-  adaptive_icon_background: "assets/images/logo.png"
+  adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/logo.png"
   remove_alpha_ios: true
   background_color_ios: "#000000"
+
+flutter_native_splash:
+  color: "#000000"
+  image: "assets/images/logo.png"
+  android: true
+  ios: true
+  android_gravity: center
+  ios_content_mode: center
+  fullscreen: true

@@ -33,13 +33,22 @@ jobs:
 
       - name: Generate platform files
         run: |
-          flutter create --platforms android --project-name hmxcloud_app .
+          flutter create --platforms android,ios --project-name hmxcloud_app .
           rm -f test/widget_test.dart test/widget_test.dart.bak
           sed -i '/minSdk/d' android/app/build.gradle
           sed -i 's/applicationId.*/&\n        minSdkVersion 23/' android/app/build.gradle
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Verify logo asset exists
+        run: test -f assets/images/logo.png
+
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
+
+      - name: Generate splash screen
+        run: dart run flutter_native_splash:create
 
       - name: Run Flutter analyze
         run: flutter analyze

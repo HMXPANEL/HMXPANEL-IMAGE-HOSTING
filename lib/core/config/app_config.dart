@@ -1,7 +1,7 @@
 class AppConfig {
   AppConfig._();
 
-  static const String appName = 'HmxCloud';
+  static const String appName = 'HMXcloud';
   static const String appVersion = '1.0.0+1';
 
   static const int maxFileSize = 10 * 1024 * 1024;

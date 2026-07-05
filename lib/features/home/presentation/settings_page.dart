@@ -105,6 +105,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
         slivers: [
           SliverAppBar(
             expandedHeight: context.isSmall ? 340 : 380,
@@ -148,7 +149,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 _buildSecuritySection(context, cs),
                 const SizedBox(height: 12),
                 _buildAboutSection(context, cs),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
                 GlassButton(
                   label: 'Sign Out',
                   icon: Icons.logout_rounded,
@@ -160,7 +161,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   ),
                   foregroundColor: Colors.white,
                 ),
-                const SizedBox(height: 32),
               ]),
             ),
           ),
@@ -728,7 +728,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           _SettingRow(
             icon: Icons.code_rounded,
             title: 'Developer',
-            subtitle: 'HmxCloud Team',
+            subtitle: 'HMXcloud Team',
             trailing: Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: 4),

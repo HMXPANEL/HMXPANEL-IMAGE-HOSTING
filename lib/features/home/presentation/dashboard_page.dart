@@ -23,6 +23,7 @@ class DashboardPage extends ConsumerWidget {
     final rv = context.rv;
 
     return SingleChildScrollView(
+      physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.fromLTRB(
         rv.horizontalEdge.left,
         MediaQuery.of(context).padding.top + kToolbarHeight + AppSpacing.sm,
@@ -41,7 +42,6 @@ class DashboardPage extends ConsumerWidget {
           _buildRecentActivitySection(context, cs, state, ref),
           const SizedBox(height: AppSpacing.xl - 8),
           _buildStorageSection(context, state),
-          const SizedBox(height: AppSpacing.lg + AppSpacing.sm),
         ],
       ),
     );

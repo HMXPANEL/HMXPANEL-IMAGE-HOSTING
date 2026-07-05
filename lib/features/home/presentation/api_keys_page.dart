@@ -28,6 +28,7 @@ class ApiKeysPage extends ConsumerWidget {
         icon: Icons.add_rounded,
       ),
       body: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
         slivers: [
           SliverAppBar(
             expandedHeight: context.isSmall ? 140 : 160,
