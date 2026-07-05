@@ -66,7 +66,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     width: 88,
                     height: 88,
                     decoration: BoxDecoration(
-                      gradient: a.primaryAurora,
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
@@ -76,10 +75,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.cloud_rounded,
-                      color: Colors.white,
-                      size: 44,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 88,
+                        height: 88,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ).animate().fadeIn(duration: 500.ms).scaleXY(
                     begin: 0.8,
